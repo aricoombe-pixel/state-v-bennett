@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>State v. Taylor Bennett</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;1,300&family=JetBrains+Mono:wght@400;500&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a recovered case archive from the year 3030. Void-black space, live particle field,
+   holographic glass panels with HUD corner brackets, magenta = State, cyan = Defense. Single dark world. */
+:root{
+  --void:#04050d;
+  --panel:rgba(16,20,46,.62);
+  --ink:#e9edff;
+  --muted:#8c93bd;
+  --accent:#ff3d9a;      /* State / alerts */
+  --sage:#33f0ff;        /* Defense / cyan */
+  --violet:#9b6bff;
+  --line:rgba(120,140,255,.18);
+  --glow:0 0 0 1px rgba(120,140,255,.16),0 0 24px -6px rgba(51,240,255,.25),0 20px 40px -24px rgba(0,0,0,.9);
+  --holo:linear-gradient(100deg,#33f0ff 0%,#9b6bff 45%,#ff3d9a 75%,#ffd36b 100%);
+  --display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --body:"Chakra Petch",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --type:"JetBrains Mono","Courier New",monospace;
+  --hand:"Caveat","Bradley Hand",cursive;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:70px;background:var(--void)}
+body{margin:0;background:var(--void);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;overflow-x:hidden}
+#field{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.scan{position:fixed;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.022) 0 1px,transparent 1px 3px);mix-blend-mode:overlay}
+.aurora{position:fixed;inset:-20%;z-index:0;pointer-events:none;background:
+  radial-gradient(40% 35% at 15% 10%,rgba(155,107,255,.20),transparent 70%),
+  radial-gradient(35% 30% at 90% 30%,rgba(255,61,154,.14),transparent 70%),
+  radial-gradient(40% 40% at 50% 100%,rgba(51,240,255,.12),transparent 70%);
+  animation:drift 24s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translate3d(3%,-2%,0) rotate(4deg)}}
+nav,header,section,footer{position:relative;z-index:2}
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.02;text-wrap:balance;margin:0;letter-spacing:-.02em}
+h2{font-size:clamp(1.9rem,4.6vw,3.2rem);background:var(--holo);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:holo 8s linear infinite}
+@keyframes holo{to{background-position:200% 0}}
+h3{font-size:1.25rem}
+p{margin:0}
+a{color:var(--sage)}
+:focus-visible{outline:2px solid var(--sage);outline-offset:3px;border-radius:4px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+.label{font-family:var(--type);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--sage);display:flex;align-items:center;gap:10px}
+.label:before{content:"";width:22px;height:1px;background:currentColor;box-shadow:0 0 8px currentColor}
+.muted{color:var(--muted)}
+.prose{max-width:66ch}
+.stack{display:flex;flex-direction:column;gap:14px}
+
+/* HUD panel base */
+.card,.col,.cf,.pol,.tick,.theory,details.q,.idcard,.folder,.decode,.tbl,.note,.gamebox{
+  position:relative;background:var(--panel);backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%);
+  border:1px solid var(--line);border-radius:14px;box-shadow:var(--glow)}
+.card:before,.idcard:before,.theory:before,.gamebox:before,.folder:after{content:"";position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(var(--sage),var(--sage)) top left/14px 2px no-repeat,linear-gradient(var(--sage),var(--sage)) top left/2px 14px no-repeat,
+  linear-gradient(var(--accent),var(--accent)) bottom right/14px 2px no-repeat,linear-gradient(var(--accent),var(--accent)) bottom right/2px 14px no-repeat;opacity:.9}
+.card,.col,.cf,.pol,.theory,details.q{transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease}
+.card:hover,.cf:hover,.pol:hover,details.q:hover{transform:translateY(-4px);border-color:rgba(51,240,255,.45);box-shadow:0 0 0 1px rgba(51,240,255,.3),0 0 34px -4px rgba(51,240,255,.35),0 24px 40px -24px #000}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}}
+
+/* nav */
+
+/* hero */
+header.hero{padding:70px 0 40px}
+.hero-grid{display:grid;grid-template-columns:1.3fr .9fr;gap:44px;align-items:center}
+.hero h1{font-size:clamp(2.6rem,7.4vw,5.6rem);line-height:.95;text-transform:uppercase;text-shadow:0 0 40px rgba(155,107,255,.35)}
+.hero h1 em{font-style:normal;background:var(--holo);-webkit-background-clip:text;background-clip:text;color:transparent}
+.glitch{position:relative;display:inline-block}
+.glitch:after{content:attr(data-t);position:absolute;left:0;top:0;color:var(--accent);clip-path:inset(0 0 0 0);opacity:.0;animation:glit 5s steps(1) infinite}
+@keyframes glit{0%,92%,100%{opacity:0;transform:none}93%{opacity:.8;transform:translate(3px,-2px);clip-path:inset(20% 0 55% 0)}95%{opacity:.8;transform:translate(-3px,2px);clip-path:inset(60% 0 10% 0)}97%{opacity:.6;transform:translate(2px,0);clip-path:inset(40% 0 35% 0)}}
+.hero .lede{font-size:1.12rem;margin-top:22px;max-width:54ch;color:#c8cdf0}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.chip{font-family:var(--type);font-size:.72rem;letter-spacing:.06em;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--ink)}
+.chip.red{border-color:var(--accent);color:var(--accent);box-shadow:0 0 16px -4px var(--accent),inset 0 0 12px -6px var(--accent)}
+.chip.sage{border-color:var(--sage);color:var(--sage);box-shadow:0 0 16px -4px var(--sage)}
+.folder{padding:28px 26px 24px;animation:float 7s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-10px)}}
+.folder:before{content:"ARCHIVE // 0631";position:absolute;top:-12px;left:20px;font-family:var(--type);font-size:.66rem;letter-spacing:.2em;color:var(--void);background:var(--sage);padding:3px 10px;border-radius:4px;box-shadow:0 0 14px var(--sage)}
+.stamp{display:inline-block;font-family:var(--display);font-size:.8rem;letter-spacing:.25em;color:var(--accent);border:1px solid var(--accent);padding:5px 12px;border-radius:6px;text-shadow:0 0 10px var(--accent);box-shadow:inset 0 0 14px -6px var(--accent)}
+.folder dl{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;margin:18px 0 0;font-size:.92rem}
+.folder dt{font-family:var(--type);color:var(--muted);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;padding-top:4px}
+.folder dd{margin:0;font-weight:600}
+
+section.block{padding:84px 0 24px}
+.head{display:flex;flex-direction:column;gap:12px;margin-bottom:30px}
+
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card{padding:22px}
+.card ul{margin:8px 0 0;padding-left:18px}
+.card li{margin:4px 0}
+.card li::marker{color:var(--sage)}
+.card h3{margin-bottom:8px}
+.num{font-family:var(--display);font-size:3rem;line-height:1;background:var(--holo);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+.elements{counter-reset:el}
+.elements .card{padding-left:74px}
+.elements .card:after{counter-increment:el;content:"0" counter(el);position:absolute;left:20px;top:20px;font-family:var(--display);font-size:1.7rem;color:var(--sage);text-shadow:0 0 14px var(--sage)}
+
+.person{display:flex;flex-direction:column;gap:8px}
+.person .role{font-size:.88rem;color:var(--muted)}
+.side{font-family:var(--type);font-size:.64rem;letter-spacing:.16em;padding:4px 9px;border-radius:4px;align-self:flex-start;border:1px solid}
+.side.state{color:var(--accent);border-color:rgba(255,61,154,.5);background:rgba(255,61,154,.08)}
+.side.def{color:var(--sage);border-color:rgba(51,240,255,.5);background:rgba(51,240,255,.07)}
+.side.none{color:var(--muted);border-color:var(--line)}
+
+/* timeline */
+.tl{position:relative;margin-left:10px;padding-left:32px}
+.tl:before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(var(--sage),var(--violet),var(--accent));box-shadow:0 0 12px var(--violet)}
+.tl-era{font-family:var(--display);font-size:1.3rem;margin:34px 0 10px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink)}
+.tl-item{position:relative;padding:12px 16px;margin:8px 0;border-radius:12px;border:1px solid transparent}
+.tl-item:hover{background:var(--panel);border-color:var(--line)}
+.tl-item:before{content:"";position:absolute;left:-38px;top:20px;width:12px;height:12px;border-radius:50%;background:var(--void);border:2px solid var(--sage)}
+.tl-item.key:before{background:var(--accent);border-color:var(--accent);box-shadow:0 0 14px var(--accent);animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 2px var(--accent)}}
+.tl-date{font-family:var(--type);font-size:.76rem;letter-spacing:.12em;color:var(--sage);text-transform:uppercase}
+.tl-item.key .tl-date{color:var(--accent)}
+.tl-src{font-size:.76rem;color:var(--muted);font-family:var(--type)}
+
+/* night */
+.track{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.tick{padding:18px 14px;overflow:hidden}
+.tick.hot{border-color:rgba(255,61,154,.45)}
+.tick.hot:after{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:var(--accent);box-shadow:0 0 14px var(--accent);animation:sweep 2.6s linear infinite}
+@keyframes sweep{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.tick .t{font-family:var(--display);font-size:2rem;line-height:1;font-variant-numeric:tabular-nums;color:var(--ink);text-shadow:0 0 18px rgba(255,61,154,.5)}
+.tick p{font-size:.86rem;margin-top:10px;color:#c8cdf0}
+.window{margin-top:16px;font-family:var(--type);font-size:.8rem;color:var(--muted)}
+.window b{color:var(--accent)}
+
+/* witnesses */
+.wit{display:grid;grid-template-columns:250px 1fr;gap:26px;align-items:start;padding:30px 0;border-top:1px solid var(--line)}
+.wit:first-of-type{border-top:0}
+.idcard{padding:20px;overflow:hidden}
+.idcard:after{content:"";position:absolute;left:0;right:0;height:40%;top:-40%;background:linear-gradient(transparent,rgba(51,240,255,.12),transparent);animation:scanid 4s linear infinite}
+@keyframes scanid{to{top:120%}}
+.idcard .mono{width:66px;height:66px;border-radius:14px;display:grid;place-items:center;font-family:var(--display);font-size:1.7rem;color:var(--accent);border:1px solid var(--accent);box-shadow:0 0 22px -4px var(--accent),inset 0 0 18px -8px var(--accent);margin-bottom:12px;transform:rotate(45deg)}
+.idcard .mono{transform:none;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);border-radius:0;background:rgba(255,61,154,.12)}
+.idcard.def .mono{color:var(--sage);background:rgba(51,240,255,.1)}
+.idcard h3{font-size:1.25rem}
+.idcard small{display:block;color:var(--muted);font-size:.8rem;margin-top:6px;font-family:var(--type)}
+.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.col{padding:16px 18px}
+.col h4{margin:0 0 6px;font-family:var(--type);font-weight:500;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase}
+.col.say h4{color:var(--ink)} .col.help h4{color:var(--sage)} .col.hurt h4{color:var(--accent)}
+.col.help{border-color:rgba(51,240,255,.25)} .col.hurt{border-color:rgba(255,61,154,.25)}
+.col ul{margin:0;padding-left:18px;font-size:.9rem;color:#cdd2f2}
+.col li{margin:5px 0}
+.quote{font-family:var(--body);font-weight:300;font-style:italic;font-size:1.3rem;line-height:1.35;margin:4px 0 16px;max-width:60ch;color:#fff;border-left:2px solid var(--violet);padding-left:16px;text-shadow:0 0 22px rgba(155,107,255,.5)}
+.subhead{display:flex;align-items:center;gap:14px;margin:34px 0 6px}
+.subhead h3{font-size:1.5rem}
+.subhead .rule{flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+
+/* exhibits */
+.polaroids{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px}
+.pol{padding:14px 14px 16px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.pol .ph{height:88px;border-radius:10px;display:grid;place-items:center;font-family:var(--display);font-size:2.4rem;color:var(--sage);text-shadow:0 0 18px var(--sage);
+  background:radial-gradient(circle at 50% 120%,rgba(51,240,255,.25),transparent 60%),repeating-linear-gradient(90deg,rgba(51,240,255,.06) 0 1px,transparent 1px 14px),repeating-linear-gradient(0deg,rgba(51,240,255,.06) 0 1px,transparent 1px 14px);border:1px solid rgba(51,240,255,.2)}
+.pol.key .ph{color:var(--accent);text-shadow:0 0 18px var(--accent);border-color:rgba(255,61,154,.35);background:radial-gradient(circle at 50% 120%,rgba(255,61,154,.28),transparent 60%),repeating-linear-gradient(90deg,rgba(255,61,154,.07) 0 1px,transparent 1px 14px),repeating-linear-gradient(0deg,rgba(255,61,154,.07) 0 1px,transparent 1px 14px)}
+.pol h4{margin:0;font-size:.98rem;font-family:var(--display);font-weight:500;letter-spacing:-.01em}
+.pol p{font-size:.85rem;color:var(--muted)}
+.pol .who{font-family:var(--type);font-size:.66rem;letter-spacing:.06em;color:var(--sage);opacity:.85}
+
+/* napkin as hologram */
+.napkin-wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:40px;align-items:center}
+.napkin{position:relative;aspect-ratio:1/1;border-radius:18px;padding:30px;color:#bff9ff;font-family:var(--hand);
+  background:radial-gradient(circle at 50% 50%,rgba(51,240,255,.16),rgba(155,107,255,.08) 55%,transparent 72%),repeating-linear-gradient(0deg,rgba(51,240,255,.08) 0 1px,transparent 1px 4px);
+  border:1px solid rgba(51,240,255,.35);box-shadow:0 0 60px -10px rgba(51,240,255,.45),inset 0 0 60px -20px rgba(51,240,255,.5);
+  transform:perspective(900px) rotateX(14deg) rotateY(-12deg);animation:hover3d 8s ease-in-out infinite;text-shadow:0 0 12px #33f0ff}
+@keyframes hover3d{50%{transform:perspective(900px) rotateX(8deg) rotateY(-4deg) translateY(-10px)}}
+.napkin span{position:absolute}
+.napkin .n1{top:16%;left:12%;font-size:3.3rem;transform:rotate(-4deg)}
+.napkin .n2{top:44%;left:28%;font-size:2.5rem;transform:rotate(3deg)}
+.napkin .n3{bottom:12%;left:14%;font-size:3.4rem;color:#ffb3d6;text-shadow:0 0 14px var(--accent)}
+.napkin .n4{bottom:16%;right:14%;font-size:.75rem;color:var(--accent);font-family:var(--type);letter-spacing:.2em;transform:none}
+.napkin .caption{position:absolute;bottom:-34px;left:0;right:0;text-align:center;font-family:var(--type);font-size:.66rem;letter-spacing:.1em;color:var(--muted);text-shadow:none}
+.decode{display:grid;grid-template-columns:auto 1fr 1fr;overflow:hidden;font-size:.9rem}
+.decode div{padding:12px 14px;border-top:1px solid var(--line)}
+.decode .h{font-family:var(--type);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;border-top:0;color:var(--muted);background:rgba(255,255,255,.03)}
+.decode .h:nth-child(2){color:var(--accent)} .decode .h:nth-child(3){color:var(--sage)}
+.decode .term{font-family:var(--hand);font-size:1.5rem;line-height:1.1;color:#bff9ff;text-shadow:0 0 10px #33f0ff}
+
+/* theories */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.theory{padding:28px}
+.theory.state{border-color:rgba(255,61,154,.4);box-shadow:0 0 50px -18px var(--accent),var(--glow)}
+.theory.def{border-color:rgba(51,240,255,.4);box-shadow:0 0 50px -18px var(--sage),var(--glow)}
+.theory h3{font-size:1.3rem}
+.theory ol{padding-left:20px;margin:14px 0 0}
+.theory li{margin:9px 0;color:#cdd2f2}
+.theory li b{color:var(--ink)}
+
+/* conflicts */
+.conf{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.cf{padding:18px 20px 18px 24px;overflow:hidden}
+.cf:before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:3px;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+.cf h4{margin:0 0 6px;font-size:1rem;font-family:var(--display);font-weight:500}
+.cf p{font-size:.9rem;color:#cdd2f2}
+.cf .use{margin-top:10px;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;font-family:var(--type);color:var(--sage)}
+
+/* table */
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:.9rem}
+th,td{text-align:left;padding:12px 16px;border-top:1px solid var(--line);vertical-align:top}
+th{font-family:var(--type);font-weight:500;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;border-top:0;color:var(--muted);background:rgba(255,255,255,.03)}
+td:first-child{font-weight:600;white-space:nowrap}
+td.r{font-family:var(--type);color:var(--accent);white-space:nowrap;text-shadow:0 0 10px rgba(255,61,154,.5)}
+tbody tr:hover td{background:rgba(51,240,255,.04)}
+
+/* practice */
+.qs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+details.q{padding:18px 20px}
+details.q summary{cursor:pointer;list-style:none;font-weight:600}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary:after{content:"[ DECRYPT ANSWER ]";display:block;margin-top:12px;font-family:var(--type);font-size:.66rem;letter-spacing:.18em;color:var(--accent)}
+details.q[open] summary:after{content:"[ CLOSE ]";color:var(--muted)}
+details.q[open]{border-color:rgba(51,240,255,.4)}
+details.q .a{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);font-size:.92rem;color:#cdd2f2}
+details.q .a b{color:var(--sage)}
+details.q .a i{color:var(--accent);font-style:normal}
+
+.note{margin-top:22px;padding:14px 18px;font-size:.86rem;max-width:84ch;border-color:rgba(255,211,107,.35);color:#f3e6c4}
+.note b{color:#ffd36b}
+footer{padding:60px 0 50px;color:var(--muted);font-size:.8rem;font-family:var(--type);letter-spacing:.04em}
+
+/* games */
+.games{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.gamebox{padding:18px;display:flex;flex-direction:column;gap:12px}
+.gamebox h3{font-size:1.4rem}
+.gamebox .gtag{font-family:var(--type);font-size:.66rem;letter-spacing:.18em;color:var(--accent)}
+.screen{position:relative;border-radius:12px;overflow:hidden;border:1px solid rgba(51,240,255,.3);box-shadow:inset 0 0 40px -10px rgba(51,240,255,.4),0 0 40px -16px var(--sage);background:#02030a}
+.screen canvas{display:block;width:100%;height:auto;aspect-ratio:16/10;touch-action:none}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;font-family:var(--type);font-size:.7rem;color:var(--muted);letter-spacing:.06em}
+.btn{font-family:var(--display);font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;color:var(--void);background:var(--sage);border:0;border-radius:10px;padding:11px 18px;box-shadow:0 0 22px -2px var(--sage)}
+.btn:hover{filter:brightness(1.15)}
+.btn.pink{background:var(--accent);box-shadow:0 0 22px -2px var(--accent)}
+.pad{display:none;gap:8px}
+.pad button{flex:1;font-family:var(--display);font-size:1rem;color:var(--ink);background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:10px;padding:14px 0;touch-action:manipulation}
+@media (hover:none){.pad{display:flex}}
+
+@media (max-width:980px){
+  .games{grid-template-columns:1fr}
+}
+@media (max-width:900px){
+  .hero-grid,.napkin-wrap,.vs{grid-template-columns:1fr}
+  .g3,.g4,.cols{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .track{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .wit{grid-template-columns:1fr}
+  .idcard{max-width:340px}
+  .napkin{max-width:360px;margin:0 auto 34px}
+}
+@media (max-width:600px){
+  .g2,.g3,.g4,.cols,.conf,.qs{grid-template-columns:1fr}
+  .track{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .decode{grid-template-columns:1fr}
+  .decode .h:not(:first-child){display:none}
+}
+
+
+/* AI courtroom */
+.court{display:grid;grid-template-columns:300px 1fr;gap:20px;align-items:stretch}
+.court-side,.court-main{position:relative;background:var(--panel);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:14px;box-shadow:var(--glow)}
+.court-side{padding:18px;display:flex;flex-direction:column;gap:16px}
+.field{display:flex;flex-direction:column;gap:8px}
+.flabel{font-family:var(--type);font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--sage)}
+.modes{display:flex;flex-direction:column;gap:8px}
+.mode{text-align:left;cursor:pointer;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--ink);font-family:var(--body)}
+.mode b{display:block;font-family:var(--display);font-weight:500;font-size:.88rem}
+.mode small{display:block;color:var(--muted);font-size:.8rem;margin-top:2px}
+.mode.on{border-color:var(--sage);box-shadow:0 0 18px -6px var(--sage),inset 0 0 18px -10px var(--sage)}
+select{appearance:none;width:100%;font:500 .92rem var(--body);color:var(--ink);background:rgba(255,255,255,.04) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2333f0ff' fill='none' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 12px center;border:1px solid var(--line);border-radius:10px;padding:10px 34px 10px 12px}
+select option{background:#0b0d20;color:var(--ink)}
+.court-note{font-size:.78rem;color:var(--muted);font-family:var(--type)}
+.court-main{display:flex;flex-direction:column;min-height:560px;max-height:78vh}
+.court-bar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--line)}
+.live{display:flex;align-items:center;gap:10px;font-family:var(--type);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.live i{width:9px;height:9px;border-radius:50%;background:var(--muted)}
+.live.on{color:var(--ink)} .live.on i{background:var(--accent);box-shadow:0 0 10px var(--accent);animation:pulse 1.6s ease-in-out infinite}
+.court-tools{display:flex;gap:6px;flex-wrap:wrap}
+.tool{cursor:pointer;font-family:var(--type);font-size:.72rem;letter-spacing:.06em;color:var(--ink);background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:8px;padding:7px 11px}
+.tool:hover:not(:disabled){border-color:var(--sage)}
+.tool:disabled{opacity:.4;cursor:not-allowed}
+.tool[aria-pressed="true"]{border-color:var(--sage);color:var(--sage);box-shadow:0 0 14px -4px var(--sage)}
+.log{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth}
+.msg{max-width:84%;padding:12px 15px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.03);font-size:.95rem}
+.msg>b{display:block;font-family:var(--type);font-weight:500;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:5px}
+.msg p{white-space:pre-wrap}
+.msg.ai{align-self:flex-start;border-color:rgba(255,61,154,.35);box-shadow:0 0 22px -12px var(--accent)}
+.msg.ai>b{color:var(--accent)}
+.msg.me{align-self:flex-end;border-color:rgba(51,240,255,.35);background:rgba(51,240,255,.06)}
+.msg.me>b{color:var(--sage)}
+.msg.sys{align-self:center;max-width:92%;border-style:dashed;color:#cdd2f2}
+.msg.sys>b{color:#ffd36b}
+.msg.err{border-color:rgba(255,211,107,.5)}
+.msg .coach{display:block;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);color:#bff9ff}
+.typing:after{content:"▍";animation:blink 1s steps(1) infinite;color:var(--accent)}
+@keyframes blink{50%{opacity:0}}
+.composer{display:flex;gap:8px;align-items:flex-end;padding:12px;border-top:1px solid var(--line)}
+.composer textarea{flex:1;resize:none;font:400 .98rem var(--body);color:var(--ink);background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:46px;max-height:160px}
+.composer textarea:focus{outline:none;border-color:var(--sage);box-shadow:0 0 16px -6px var(--sage)}
+.mic{font-size:1.05rem;padding:10px 12px}
+.mic.rec{border-color:var(--accent);color:var(--accent);box-shadow:0 0 16px -2px var(--accent)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:900px){.court{grid-template-columns:1fr}.court-main{max-height:none;min-height:520px}.msg{max-width:94%}}
+
+/* ---- menu app shell ---- */
+nav.rail{position:fixed;top:0;left:0;bottom:0;width:272px;z-index:30;background:rgba(4,5,13,.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-right:1px solid var(--line);border-bottom:0;display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:20px 20px 14px;border-bottom:1px solid var(--line)}
+.brand a{text-decoration:none;color:var(--ink)}
+.brand b{display:block;font-family:var(--display);font-weight:600;font-size:1.02rem;letter-spacing:-.01em;background:var(--holo);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand small{display:block;font-family:var(--type);font-size:.6rem;letter-spacing:.2em;color:var(--muted);margin-top:3px}
+.menuBtn{display:none;cursor:pointer;font-family:var(--type);font-size:.72rem;letter-spacing:.16em;color:var(--void);background:var(--sage);border:0;border-radius:8px;padding:9px 12px;box-shadow:0 0 16px -2px var(--sage)}
+.menu{list-style:none;margin:0;padding:10px 10px 24px;overflow-y:auto;flex:1;scrollbar-width:thin}
+.menu .grp{font-family:var(--type);font-size:.58rem;letter-spacing:.24em;color:var(--muted);text-transform:uppercase;padding:14px 12px 6px}
+.menu a{display:grid;grid-template-columns:30px 1fr;gap:2px 8px;align-items:center;text-decoration:none;color:var(--ink);padding:9px 12px;border-radius:10px;border:1px solid transparent}
+.menu a span.n{grid-row:span 2;font-family:var(--type);font-size:.7rem;color:var(--muted)}
+.menu a b{font-family:var(--body);font-weight:600;font-size:.92rem}
+.menu a small{font-size:.72rem;color:var(--muted);line-height:1.3}
+.menu a:hover{border-color:var(--line);background:rgba(255,255,255,.03)}
+.menu a.on{border-color:rgba(51,240,255,.5);background:rgba(51,240,255,.08);box-shadow:0 0 22px -8px var(--sage)}
+.menu a.on span.n{color:var(--sage)}
+.menu a.hot b{color:var(--accent)}
+body{padding-left:272px}
+.view{display:none}
+.view.on{display:block;animation:viewIn .35s ease}
+@keyframes viewIn{from{opacity:.0;transform:translateY(10px)}to{opacity:1;transform:none}}
+section.block{padding:56px 0 30px;min-height:70vh}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:40px;padding-top:20px;border-top:1px solid var(--line)}
+.pager a{text-decoration:none;font-family:var(--type);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--sage);border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--panel)}
+.pager a:hover{border-color:var(--sage)}
+.pager a.next{margin-left:auto}
+/* home tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;margin-top:34px}
+.tile{position:relative;display:flex;flex-direction:column;gap:6px;text-decoration:none;color:var(--ink);padding:18px;border-radius:14px;background:var(--panel);border:1px solid var(--line);box-shadow:var(--glow);transition:transform .25s,border-color .25s,box-shadow .25s;overflow:hidden}
+.tile:hover{transform:translateY(-4px);border-color:rgba(51,240,255,.5);box-shadow:0 0 30px -6px rgba(51,240,255,.45)}
+.tile i{font-style:normal;font-family:var(--type);font-size:.66rem;letter-spacing:.2em;color:var(--sage)}
+.tile b{font-family:var(--display);font-weight:500;font-size:1.08rem}
+.tile small{color:var(--muted);font-size:.84rem;line-height:1.4}
+.tile.big{grid-column:span 2;border-color:rgba(255,61,154,.45);box-shadow:0 0 40px -14px var(--accent),var(--glow)}
+.tile.big i{color:var(--accent)}
+.tile.big b{font-size:1.4rem}
+.tile:after{content:"→";position:absolute;right:16px;top:14px;color:var(--muted);font-family:var(--type)}
+@media (max-width:999px){
+  body{padding-left:0}
+  nav.rail{bottom:auto;right:0;width:auto;border-right:0;border-bottom:1px solid var(--line)}
+  .brand{border-bottom:0;padding:12px 16px}
+  .menuBtn{display:block}
+  .menu{display:none;max-height:calc(100vh - 64px);border-top:1px solid var(--line)}
+  nav.rail.open .menu{display:block}
+  header.hero{padding-top:100px}
+  section.block{padding-top:96px}
+  .tile.big{grid-column:auto}
+}
+</style>
+</head>
+<body>
+<div class="aurora" aria-hidden="true"></div>
+<canvas id="field" aria-hidden="true"></canvas>
+<div class="scan" aria-hidden="true"></div>
+
+<nav class="rail" id="rail" aria-label="Menu">
+  <div class="brand"><a href="#overview"><b>STATE v. BENNETT</b><small>ARCHIVE 0631 · YEAR 3030</small></a><button type="button" class="menuBtn" id="menuBtn" aria-expanded="false" aria-controls="menuList">MENU</button></div>
+  <ul class="menu" id="menuList">
+    <li class="grp">START</li>
+    <li><a href="#overview"><span class="n">00</span><b>Home</b><small>Case file & menu</small></a></li>
+    <li><a href="#ai-court" class="hot"><span class="n">01</span><b>AI Courtroom</b><small>Practice live with Claude</small></a></li>
+    <li><a href="#games" class="hot"><span class="n">02</span><b>Arcade</b><small>Portal Breaker · Objection Rush</small></a></li>
+    <li class="grp">THE LAW</li>
+    <li><a href="#law"><span class="n">03</span><b>What must be proven</b><small>Elements & burden</small></a></li>
+    <li><a href="#rulings"><span class="n">04</span><b>Rulings & stipulations</b><small>Binding orders</small></a></li>
+    <li><a href="#rules"><span class="n">05</span><b>Rules & objections</b><small>Evidence cheat sheet</small></a></li>
+    <li class="grp">THE FACTS</li>
+    <li><a href="#people"><span class="n">06</span><b>Who's who</b><small>Cast & companies</small></a></li>
+    <li><a href="#timeline"><span class="n">07</span><b>Timeline</b><small>2017 → indictment</small></a></li>
+    <li><a href="#night"><span class="n">08</span><b>June 5 · 8:40</b><small>The four-minute window</small></a></li>
+    <li><a href="#napkin"><span class="n">09</span><b>The napkin</b><small>Exhibit 8 decoded</small></a></li>
+    <li><a href="#exhibits"><span class="n">10</span><b>Evidence board</b><small>Exhibits 1–19</small></a></li>
+    <li class="grp">TRIAL PREP</li>
+    <li><a href="#witnesses"><span class="n">11</span><b>Witnesses</b><small>Say · help · cross</small></a></li>
+    <li><a href="#theories"><span class="n">12</span><b>Case theories</b><small>State vs. Defense</small></a></li>
+    <li><a href="#conflicts"><span class="n">13</span><b>Contradictions</b><small>Impeachment ammo</small></a></li>
+    <li><a href="#practice"><span class="n">14</span><b>Cross drills</b><small>Flip-card Q&A</small></a></li>
+  </ul>
+</nav>
+
+<header class="hero view" id="overview">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="label">Recovered archive · year 3030 · MYLaw Mock Trial 2026–27</div>
+      <h1><span class="glitch" data-t="State of Maryland">State of Maryland</span> <em>v.</em> <span class="glitch" data-t="Taylor Bennett">Taylor Bennett</span></h1>
+      <p class="lede">A video game, a napkin, and a four-minute security gap. Someone walked into Solara Interactive's locked development bay and left with the only copy of TotalSense. Morgan Pierce has pleaded guilty. The question for the jury is whether Taylor Bennett planned it with them.</p>
+      <div class="facts">
+        <span class="chip red">Conspiracy to commit robbery with a dangerous weapon</span>
+        <span class="chip">Max 20 years</span>
+        <span class="chip">Jury trial · guilt phase only</span>
+        <span class="chip sage">Beyond a reasonable doubt</span>
+      </div>
+    </div>
+    <div class="folder">
+      <span class="stamp">CASE FILE</span>
+      <dl>
+        <dt>Case no.</dt><dd>C-11-CR-26-000631</dd>
+        <dt>Court</dt><dd>Circuit Court, Chesapeake County</dd>
+        <dt>Judge</dt><dd>Hon. Carolina Solano Paz</dd>
+        <dt>Offense date</dt><dd>June 5, 2026 · 8:40–8:45 p.m.</dd>
+        <dt>Indicted</dt><dd>October 31, 2026</dd>
+        <dt>Co-conspirator</dt><dd>Morgan Pierce (pleaded guilty)</dd>
+        <dt>Weapon</dt><dd>Metal "Lucky 8" baseball bat (Stip. 10)</dd>
+        <dt>Property</dt><dd>TotalSense_Master file</dd>
+      </dl>
+    </div>
+  </div>
+  <div class="wrap"><div class="tiles">
+  <a class="tile big" href="#ai-court"><i>01</i><b>AI Courtroom</b><small>Practice live with Claude</small></a>
+  <a class="tile" href="#games"><i>02</i><b>Arcade</b><small>Portal Breaker · Objection Rush</small></a>
+  <a class="tile" href="#law"><i>03</i><b>What must be proven</b><small>Elements & burden</small></a>
+  <a class="tile" href="#rulings"><i>04</i><b>Rulings & stipulations</b><small>Binding orders</small></a>
+  <a class="tile" href="#rules"><i>05</i><b>Rules & objections</b><small>Evidence cheat sheet</small></a>
+  <a class="tile" href="#people"><i>06</i><b>Who's who</b><small>Cast & companies</small></a>
+  <a class="tile" href="#timeline"><i>07</i><b>Timeline</b><small>2017 → indictment</small></a>
+  <a class="tile" href="#night"><i>08</i><b>June 5 · 8:40</b><small>The four-minute window</small></a>
+  <a class="tile" href="#napkin"><i>09</i><b>The napkin</b><small>Exhibit 8 decoded</small></a>
+  <a class="tile" href="#exhibits"><i>10</i><b>Evidence board</b><small>Exhibits 1–19</small></a>
+  <a class="tile" href="#witnesses"><i>11</i><b>Witnesses</b><small>Say · help · cross</small></a>
+  <a class="tile" href="#theories"><i>12</i><b>Case theories</b><small>State vs. Defense</small></a>
+  <a class="tile" href="#conflicts"><i>13</i><b>Contradictions</b><small>Impeachment ammo</small></a>
+  <a class="tile" href="#practice"><i>14</i><b>Cross drills</b><small>Flip-card Q&A</small></a>
+</div>
+  </div>
+</header>
+
+<section class="block view" id="law">
+  <div class="wrap">
+    <div class="head">
+      <div class="label">The closed universe of law</div>
+      <h2>What the State has to prove</h2>
+      <p class="prose muted">Bennett is charged with the agreement, not the robbery itself. The State does not need to prove Bennett robbed anyone. It has to prove all four elements below beyond a reasonable doubt, using direct or circumstantial evidence, which count equally.</p>
+    </div>
+    <div class="grid g2 elements">
+      <div class="card"><h3>An agreement</h3><p>Bennett entered into an agreement with another person, here Morgan Pierce.</p></div>
+      <div class="card"><h3>To commit armed robbery</h3><p>The agreement's goal was robbery with a dangerous weapon.</p></div>
+      <div class="card"><h3>Specific intent</h3><p>Bennett and Pierce both intended that one of them would commit robbery with a dangerous weapon.</p></div>
+      <div class="card"><h3>Knowledge</h3><p>Bennett knew their actions were illegal.</p></div>
+    </div>
+
+    <div class="grid g3" style="margin-top:22px">
+      <div class="card lined">
+        <div class="label">Robbery = the goal</div>
+        <ul>
+          <li>Intentionally takes property</li>
+          <li>From another person or organization</li>
+          <li>By force or threat of force</li>
+          <li>Intending to permanently deprive the owner</li>
+        </ul>
+        <p class="muted" style="margin-top:10px;font-size:.88rem">A dangerous weapon is anything capable of causing death or serious bodily harm. The parties stipulate a baseball bat qualifies.</p>
+      </div>
+      <div class="card lined">
+        <div class="label">Corroboration rule</div>
+        <p style="margin-top:8px">Conspiracy can't be proven only with statements between the alleged co-conspirators. There must be independent evidence, such as specific acts or signs they were preparing together.</p>
+      </div>
+      <div class="card lined">
+        <div class="label">Burden-shifting</div>
+        <p style="margin-top:8px">The State can never suggest Bennett had to disprove anything. If the Defense pushes its own theory, the State may point out the lack of evidence for it, without implying a legal duty. Object under Rule 403 or simply "burden-shifting."</p>
+      </div>
+    </div>
+    <p class="note"><b>Odd but true:</b> conspiracy is always a misdemeanor in Maryland, even when the goal is a felony. The maximum penalty mirrors the target crime, so Bennett faces up to 20 years. Sentencing is off-limits at trial (Rule 401).</p>
+  </div>
+</section>
+
+<section class="block view" id="rulings">
+  <div class="wrap">
+    <div class="head">
+      <div class="label">Memorandum &amp; Order · binding at trial</div>
+      <h2>Rulings, stipulations, special instructions</h2>
+    </div>
+
+    <div class="grid g2">
+      <div class="card tape">
+        <div class="label">Motion 1 · Denied</div>
+        <h3>Exclude the experts</h3>
+        <p>Both Wade (law enforcement) and Barry (psychology) testify. Qualify them on direct, opponent may voir dire, then the court admits them. You can still object under 702(b)/(c) when they stray outside their field.</p>
+      </div>
+      <div class="card tape">
+        <div class="label">Motion 2 · Denied</div>
+        <h3>Exclude Pierce's conduct</h3>
+        <p>Pierce's actions are relevant and highly probative. But no "guilt by association." Bennett's guilt must rest on Bennett's own knowing participation.</p>
+      </div>
+      <div class="card tape">
+        <div class="label">Motion 3 · Denied (for now)</div>
+        <h3>Exclude Pierce's statements</h3>
+        <p>Co-conspirator statements come in conditionally under 801(d)(2)(E). The Defense must object when each statement comes up, then <b>renew it specifically</b> right before the Defense rests. One attorney renews. Vague renewals fail. The State must show a conspiracy by a preponderance.</p>
+      </div>
+      <div class="card tape">
+        <div class="label">Motion 4 · Granted</div>
+        <h3>No "consciousness of guilt"</h3>
+        <p>Nobody may use Bennett's request for a lawyer at the June 13 interview as evidence of guilt. The attorney crossing the witness who raises it objects under 403.</p>
+      </div>
+    </div>
+
+    <div class="subhead"><h3>The 12 stipulations</h3><span class="rule"></span></div>
+    <div class="grid g3" style="margin-top:14px">
+      <div class="card"><p><b>1.</b> Exhibits are pre-numbered; use those numbers.</p></div>
+      <div class="card"><p><b>2.</b> All notice requirements are met.</p></div>
+      <div class="card"><p><b>3.</b> Exhibits 1–19 are authentic. Other objections are still open.</p></div>
+      <div class="card"><p><b>4.</b> Bifurcated trial: guilt only, no sentencing evidence.</p></div>
+      <div class="card"><p><b>5.</b> No chain-of-custody arguments.</p></div>
+      <div class="card"><p><b>6.</b> Constitutional objections waived (except the motions above).</p></div>
+      <div class="card"><p><b>7.</b> Exhibits 4, 6, 14, 18 are business records under 803(6).</p></div>
+      <div class="card"><p><b>8.</b> Solara HQ is in Chesapeake County.</p></div>
+      <div class="card"><p><b>9.</b> Transcripts are accurate; speakers are who they're labeled as.</p></div>
+      <div class="card"><p><b>10.</b> A baseball bat is a dangerous weapon.</p></div>
+      <div class="card" style="border:2px solid var(--accent)"><p><b>11.</b> The handwriting on Exhibit 8 (the napkin) is Bennett's.</p></div>
+      <div class="card"><p><b>12.</b> Bennett knows only the exhibits and facts discussed in the interrogation.</p></div>
+    </div>
+
+    <div class="subhead"><h3>Special instructions</h3><span class="rule"></span></div>
+    <div class="grid g2" style="margin-top:14px">
+      <div class="card lined"><div class="label">Witness selection</div><p style="margin-top:6px">State must call Pierce and Wade, plus Cooper <i>or</i> Shaffer. Defense must call Barry and Bennett, plus Caldwell <i>or</i> Dawn. Three each, any order. Exchange witnesses, order and pronouns 48 business hours before trial; State discloses first. Miss the deadline and the defaults are Cooper and Dawn.</p></div>
+      <div class="card lined"><div class="label">Courtroom</div><p style="margin-top:6px">Wade is the State's party representative and Bennett sits at counsel table. Everyone else can be constructively excluded, which means pretending you weren't in the room, not actually leaving.</p></div>
+      <div class="card lined"><div class="label">Witness rules</div><p style="margin-top:6px">Witnesses must own their affidavits and signatures. No Fifth Amendment refusals. No implying a witness lacks normal intelligence or has a condition affecting memory (cross on perception and memory is still fine).</p></div>
+      <div class="card lined"><div class="label">Exhibits &amp; law</div><p style="margin-top:6px">Exhibit 3(a) is the physical flash drive and 3(b) is its photo; either may be used, and nobody may imply investigators failed to bring it. No case citations. Use "the law requires…" in openings and closings, never "the Memorandum."</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block view" id="people">
+  <div class="wrap">
+    <div class="head">
+      <div class="label">Cast</div>
+      <h2>Who's who</h2>
+      <p class="prose muted">The case file uses gender-neutral language for most people. Teams declare pronouns for their witnesses before trial.</p>
+    </div>
+    <div class="grid g4">
+      <div class="card person tape"><span class="side def">DEFENDANT</span><h3>Taylor Bennett</h3><p class="role">Head Systems Administrator, Solara. Born Oct 1, 1997. Bagley's child. ~$300K student debt.</p></div>
+      <div class="card person tape"><span class="side state">STATE · MUST CALL</span><h3>Morgan Pierce</h3><p class="role">Tech Support Specialist under Bennett. Pleaded guilty. Sibling Cameron has cancer. Owns the Lucky 8. "PierceTheHail."</p></div>
+      <div class="card person tape"><span class="side state">STATE · MUST CALL</span><h3>Sgt. Dallas Wade</h3><p class="role">33. CCPD, ex-Marine cyber. Investigator and expert in law enforcement. Wants a Detective promotion.</p></div>
+      <div class="card person tape"><span class="side state">STATE · OPTION</span><h3>Jordan Shaffer</h3><p class="role">35. Solara CEO and co-founder. Prior oxycodone PWID conviction. Fired Bennett and Caldwell.</p></div>
+      <div class="card person tape"><span class="side state">STATE · OPTION</span><h3>Quinn Cooper</h3><p class="role">25. Freelance tech journalist. 2023 criminal misrepresentation conviction. Saw the napkin handoff.</p></div>
+      <div class="card person tape"><span class="side def">DEFENSE · MUST CALL</span><h3>Dr. Billie Barry</h3><p class="role">43. Forensic psychologist. Says Pierce's interrogation used the coercive Davenport Technique.</p></div>
+      <div class="card person tape"><span class="side def">DEFENSE · OPTION</span><h3>Aspen Caldwell</h3><p class="role">19. Former HR intern. Overheard Shaffer and Pierce. Now Bagley's assistant at PrimeFrame.</p></div>
+      <div class="card person tape"><span class="side def">DEFENSE · OPTION</span><h3>Kai Dawn</h3><p class="role">23. Clutch streamer @KaiInTheSky, ~800K subs. Played CodeBlue with Pierce and Bennett.</p></div>
+      <div class="card person"><span class="side none">NOT A WITNESS</span><h3>Jennifer Bagley</h3><p class="role">PrimeFrame CEO, Solara co-founder, Bennett's mother. Released OmniSense June 6.</p></div>
+      <div class="card person"><span class="side none">NOT A WITNESS</span><h3>Det. Tianna Hunt</h3><p class="role">Wade's supervisor. Ran the Bennett interview with Wade.</p></div>
+      <div class="card person"><span class="side none">NOT A WITNESS</span><h3>Melissa Portman</h3><p class="role">Solara HR Director. Told Shaffer to document, not discipline. Initials: M.P.</p></div>
+      <div class="card person"><span class="side none">NOT A WITNESS</span><h3>Cameron · ASA Warrick</h3><p class="role">Cameron: Pierce's younger sibling, in chemo, uninsured. Warrick: prosecutor who offered Pierce's plea mid-interview.</p></div>
+    </div>
+
+    <div class="grid g3" style="margin-top:22px">
+      <div class="card"><div class="label">The companies</div><p style="margin-top:6px"><b>Solara Interactive</b> builds TotalSense, a wristband that reads heart rate, muscle tension and reaction speed so "you become the controller." <b>PrimeFrame Studios</b>, Bagley's company, makes CodeBlue and announced the look-alike OmniSense the day after the robbery.</p></div>
+      <div class="card"><div class="label">CodeBlue</div><p style="margin-top:6px">PrimeFrame's 2024 hit. Teams of four; one teammate is a secret spy. Campaigns rotate every two weeks and vanish forever. Think Call of Duty + Overwatch + Among Us.</p></div>
+      <div class="card"><div class="label">The Hades Company</div><p style="margin-top:6px">Campaign released the last week of May 2026. Three doors: a 30-enemy portal fight (Lucky 8 helps), a four-minute four-puzzle speedrun, and a health-drain room stopped by typing <b>"Orpheus."</b></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block view" id="timeline">
+  <div class="wrap">
+    <div class="head">
+      <div class="label">Chronology</div>
+      <h2>Timeline</h2>
+      <p class="prose muted">Filled dots are the moments most likely to come up in testimony. Sources in grey.</p>
+    </div>
+    <div class="tl">
+      <div class="tl-era">Before</div>
+      <div class="tl-item"><div class="tl-date">2018</div><p>Bagley resigns mid-board-meeting, leaving notes that become TotalSense. Three months later she founds PrimeFrame.</p><div class="tl-src">Shaffer</div></div>
+      <div class="tl-item"><div class="tl-date">~2017 (nine years ago)</div><p>Shaffer arrested with 30+ grams of oxycodone; convicted of PWID, probation supervised by Wade.</p><div class="tl-src">Shaffer, Wade</div></div>
+      <div class="tl-item"><div class="tl-date">April 2021 · 2022</div><p>Bennett hired as Systems Administrator, promoted to Head Systems Administrator.</p><div class="tl-src">Shaffer, Bennett</div></div>
+      <div class="tl-item"><div class="tl-date">Late 2024</div><p>PrimeFrame releases CodeBlue. Shaffer hears rumors Bennett is "Bagley's kid."</p><div class="tl-src">Shaffer</div></div>
+      <div class="tl-item key"><div class="tl-date">Early 2025</div><p>TotalSense work begins. Bennett tells Bagley about it; she asks, "Is it called TotalSense?" Weeks later Shaffer asks if Bagley is Bennett's mother. Bennett admits it and says it won't be a problem.</p><div class="tl-src">Bennett, Shaffer</div></div>
+      <div class="tl-item"><div class="tl-date">March 2025</div><p>Dawn meets PierceTheHail during the St. Patrick's campaign. Pierce has the Lucky 8.</p><div class="tl-src">Dawn</div></div>
+      <div class="tl-item key"><div class="tl-date">~April 2025</div><p>In a game lobby, Pierce cries about Cameron's cancer: "I need to figure out a way to pay these bills off. One way or another."</p><div class="tl-src">Dawn</div></div>
+      <div class="tl-item"><div class="tl-date">September 2025</div><p>Caldwell starts as HR intern.</p><div class="tl-src">Caldwell</div></div>
+
+      <div class="tl-era">Spring 2026</div>
+      <div class="tl-item"><div class="tl-date">January 2026</div><p>Pierce introduces Bennett to Dawn; they start playing together.</p><div class="tl-src">Dawn</div></div>
+      <div class="tl-item"><div class="tl-date">March 2026</div><p>Caldwell posts keycards on Instagram; Bennett makes her delete it and reports her. Dawn hits 750K and hosts Pierce and Bennett at a live event, where Bennett writes campaign notes on a pad.</p><div class="tl-src">Caldwell, Dawn</div></div>
+      <div class="tl-item"><div class="tl-date">March 16, 2026</div><p>According to Pierce (via Dawn), Bennett mocks Cameron and Pierce's sadness.</p><div class="tl-src">Dawn</div></div>
+      <div class="tl-item"><div class="tl-date">March 17, 2026</div><p>Tense St. Patrick's campaign. Bennett asks why Pierce was called into Shaffer's office "today." Pierce: "Just some … personal stuff."</p><div class="tl-src">Dawn</div></div>
+      <div class="tl-item key"><div class="tl-date">March 18, 2026</div><p>Shaffer sees Bagley talk quietly with Bennett at Starbucks. Bennett denies leaking. Shaffer storms into HR; Portman says document, don't discipline. Caldwell overhears.</p><div class="tl-src">Shaffer, Caldwell, Bennett</div></div>
+      <div class="tl-item key"><div class="tl-date">March 20, 2026</div><p>Shaffer meets Pierce. Shaffer's version: Pierce offers "maybe there's a way this can work out for both of us." Caldwell's version: Shaffer says "I can make that happen. You just have to work with me," plus "home run."</p><div class="tl-src">Shaffer, Caldwell</div></div>
+      <div class="tl-item"><div class="tl-date">Late March</div><p>Pierce and Bennett are friends again.</p><div class="tl-src">Dawn</div></div>
+      <div class="tl-item key"><div class="tl-date">Last week of May</div><p>CodeBlue releases The Hades Company. Players soon discover the "Orpheus" code.</p><div class="tl-src">Dawn, Cooper</div></div>
+
+      <div class="tl-era">Robbery week</div>
+      <div class="tl-item"><div class="tl-date">Mon, June 1</div><p>Bennett proposes a firmware update before the demo; scanner will be down ~4 minutes. Shaffer approves.</p><div class="tl-src">Shaffer</div></div>
+      <div class="tl-item key"><div class="tl-date">Wed, June 3</div><p>Override code changed to "Orpheus" (Shaffer). Cooper's tour; Bennett mutters "Yeah, your hard work…" Cooper overhears Bennett on the phone: "Friday is definitely going to be … memorable. They are finally going to get what they deserve." Caldwell sees "code" and "Orpheus" in Shaffer's "M.P." folder. Bennett pre-schedules the update ~5 p.m. That night at Mustang Tavern (trivia night), Bennett writes on a napkin, hands it to Pierce, and mentions the Lucky 8 with a bat-swing gesture. Bennett has no lanyard.</p><div class="tl-src">Shaffer, Cooper, Caldwell, Bennett</div></div>
+      <div class="tl-item key"><div class="tl-date">Thu, June 4</div><p>Cooper's article publishes. Caldwell leaves for vacation and sees Pierce with a keycard: "this is Bennett's, I'm just returning it." That night the trio beats Hades. Pierce mentions the tech demo; Bennett says "shut up," sharper than usual.</p><div class="tl-src">Cooper, Caldwell, Dawn</div></div>
+      <div class="tl-item key"><div class="tl-date">Fri, June 5</div><p>The tech demo and robbery. See the minute-by-minute below.</p></div>
+
+      <div class="tl-era">After</div>
+      <div class="tl-item key"><div class="tl-date">Sat, June 6</div><p>9 a.m.: Wade calls Pierce in. Pierce confesses and, after a 20-minute plea pause, names Bennett. Keycard and black flash drive found in Pierce's bedroom; file recovered by disk drill. Shaffer visits Bennett in the hospital as OmniSense airs; Bennett: "You can't steal your own idea." Shaffer fires Bennett.</p><div class="tl-src">Wade, Shaffer, Bennett</div></div>
+      <div class="tl-item"><div class="tl-date">Sun, June 7</div><p>Shaffer fires Caldwell over the folder, citing security camera footage. TotalSense's June 8 Summer Games Fest reveal is cancelled.</p><div class="tl-src">Caldwell, Shaffer</div></div>
+      <div class="tl-item"><div class="tl-date">~June 12</div><p>Cooper calls the $500 tip line and IDs the napkin at the station; hears Wade say "This promotion is a shoo-in now." PrimeFrame pays Cooper $3,000 for an OmniSense piece.</p><div class="tl-src">Cooper</div></div>
+      <div class="tl-item key"><div class="tl-date">Sat, June 13</div><p>Bennett interview. Admits the napkin is theirs and the keycard was lost "the day of the robbery." Asks for a lawyer at 4:51 p.m. Arrested on a warrant.</p><div class="tl-src">Exhibit 1, Wade</div></div>
+      <div class="tl-item"><div class="tl-date">July 2 · July 3</div><p>Second Pierce interrogation at the Corrections Facility. Wade writes his report.</p></div>
+      <div class="tl-item"><div class="tl-date">Aug 1 · Aug 15</div><p>Barry's report; Wade's rebuttal addendum.</p></div>
+      <div class="tl-item"><div class="tl-date">Oct 31, 2026</div><p>Grand jury indicts Bennett.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block view" id="night">
+  <div class="wrap">
+    <div class="head">
+      <div class="label">Friday, June 5, 2026 · Exhibits 17 &amp; 19</div>
+      <h2>The four-minute window</h2>
+      <p class="prose muted">The demo ran 8:00–9:00 p.m. in the ground-floor demo hall. The development bay is in the basement behind a glass door: fingerprint normally, admin keycard plus override code when the servers are down.</p>
+    </div>
+    <div class="track">
+      <div class="tick hot"><div class="t">8:40</div><p>Firmware update starts. Fingerprint scanner goes offline. Shaffer's phone alerts.</p></div>
+      <div class="tick hot"><div class="t">8:41</div><p>An admin keycard is scanned. The log can't say whose.</p></div>
+      <div class="tick hot"><div class="t">8:42</div><p>"Orpheus" entered. Shaffer gets an alert and sends Bennett downstairs.</p></div>
+      <div class="tick hot"><div class="t">8:43</div><p>Flash drive into Terminal 04. TotalSense_Master copied, then deleted seconds later.</p></div>
+      <div class="tick"><div class="t">8:44</div><p>Servers and cameras back online.</p></div>
+      <div class="tick"><div class="t">8:45</div><p>Shaffer sees someone run up and out. Finds Bennett down by the bat. Calls 911.</p></div>
+    </div>
+    <p class="window">Then: <b>8:50</b> Shaffer calls Wade off-duty · <b>8:55</b> police arrive · <b>9:15</b> Wade arrives · <b>9:25</b> Bennett reaches Chesapeake General (concussion, GCS 11/15, six staples, post-traumatic amnesia).</p>
+  </div>
+</section>
+
+<section class="block view" id="witnesses">
+  <div class="wrap">
+    <div class="head">
+      <div class="label">Testimony</div>
+      <h2>The witnesses</h2>
+    </div>
+
+    <div class="subhead"><span class="side state">FOR THE STATE</span><span class="rule"></span></div>
+
+    <div class="wit">
+      <div class="idcard"><div class="mono">W</div><h3>Sgt. Dallas Wade</h3><small>Must call · expert in law enforcement · party representative</small></div>
+      <div>
+        <p class="quote">"This prompted me to look closer at the keycard scanner and the override code."</p>
+        <div class="cols">
+          <div class="col say"><h4>Says</h4><ul><li>Found the napkin crumpled under the scanner: "Orpheus," "four minutes," shamrock, "8"</li><li>Forensic copy shows the file copied to a flash drive at 8:43, then deleted</li><li>Lucky 8 bat on the bay floor</li><li>Pierce confessed and named Bennett; keycard and flash drive in Pierce's bedroom</li><li>Bennett's texts and emails with Pierce the week before</li></ul></div>
+          <div class="col help"><h4>Helps State</h4><ul><li>Ties napkin terms to the code, window and weapon</li><li>Insider knowledge needed for the 8:40–8:44 sequence</li><li>Addendum: Davenport methods are legal and standard; plea offers are lawful tools</li></ul></div>
+          <div class="col hurt"><h4>Cross him on</h4><ul><li>Off duty, called by his friend Shaffer, his former probationer</li><li>Wanted the promotion; "shoo-in" remark (Cooper)</li><li>Never pulled camera footage; it was overwritten</li><li>Took Shaffer's word: "It must have been Pierce"</li><li>Leading questions: "Bennett was the ringleader here, right?"</li><li>First theft-of-digital-property case; trained by Barry's father</li><li>Says he interviewed Bennett at home 10 a.m.; transcript says CCPD 3:35 p.m.</li></ul></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wit">
+      <div class="idcard"><div class="mono">P</div><h3>Morgan Pierce</h3><small>Must call · cooperating co-conspirator</small></div>
+      <div>
+        <p class="quote">"I need to figure out a way to pay these bills off. One way or another."</p>
+        <div class="cols">
+          <div class="col say"><h4>Says</h4><ul><li>Robbed Solara on June 5 and pleaded guilty</li><li>Bennett planned it and supplied access (per the interrogations, Exhibit 7)</li><li>First said they "figured out" how to do it alone</li></ul></div>
+          <div class="col help"><h4>Helps State</h4><ul><li>The only direct evidence of an agreement</li><li>Had Bennett's keycard and the override code</li><li>Napkin was handed to Pierce</li></ul></div>
+          <div class="col hurt"><h4>Cross on</h4><ul><li>Plea: 10 years, fully suspended if they cooperate (Exhibit 10)</li><li>Named Bennett only after the 20-minute plea break</li><li>2019 theft conviction (Exhibit 18)</li><li>Desperate for money; Shaffer meeting March 20</li><li>Hit Bennett with a bat</li></ul></div>
+        </div>
+        <p class="note">Pierce's own interrogation transcripts (Exhibit 7, pp. 80–90) are scanned pages that didn't come through as text. Pull Pierce's exact words from the printed packet.</p>
+      </div>
+    </div>
+
+    <div class="wit">
+      <div class="idcard"><div class="mono">S</div><h3>Jordan Shaffer</h3><small>State option (or Cooper)</small></div>
+      <div>
+        <p class="quote">"I never want to see Bennett again, unless it's in a prison jumpsuit."</p>
+        <div class="cols">
+          <div class="col say"><h4>Says</h4><ul><li>Only Shaffer and Bennett knew the override code</li><li>Bennett pushed the update and its 4-minute window</li><li>Starbucks with Bagley; "Yeah, your hard work…"</li><li>Hospital: "I've known you were a fraud… What goes around, comes around"</li></ul></div>
+          <div class="col help"><h4>Helps State</h4><ul><li>Motive: Bennett resents Shaffer for "stealing" from Bagley</li><li>Bennett controlled the update and the code</li><li>Bennett lied about the Bagley relationship</li></ul></div>
+          <div class="col hurt"><h4>Cross on</h4><ul><li>PWID conviction (609); close to Wade</li><li>"Keeping Pierce in my back pocket"</li><li>Override code in a folder on Shaffer's desk</li><li>Knew about the cameras (fired Caldwell over footage)</li><li>"Even if I did [steal TotalSense]? It serves her right"</li><li>Suing Bagley; "I caught Bagley red-handed"</li></ul></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wit">
+      <div class="idcard"><div class="mono">C</div><h3>Quinn Cooper</h3><small>State option (or Shaffer) · default if no notice</small></div>
+      <div>
+        <p class="quote">"Well, you got the Lucky 8, right? That'll stop anyone from getting in our way."</p>
+        <div class="cols">
+          <div class="col say"><h4>Says</h4><ul><li>Bennett on the phone: "They are finally going to get what they deserve"</li><li>At Mustang Tavern ~15 ft away: "Pierce, I think we got this in the bag," the Lucky 8 line, a bat-swing gesture, "Stick to the plan"</li><li>Bennett handed Pierce the napkin; Bennett's lanyard was gone</li></ul></div>
+          <div class="col help"><h4>Helps State</h4><ul><li>Only eyewitness to the planning conversation</li><li>Links the napkin to Bennett handing it to Pierce</li><li>Bennett claimed "CodeBlue strategy" when caught</li></ul></div>
+          <div class="col hurt"><h4>Cross on</h4><ul><li>2023 criminal misrepresentation conviction (609(a)(2), dishonesty)</li><li>Paid $500 by police and $3,000 by PrimeFrame</li><li>Followed them there; crowded trivia night; drink spilled</li><li>Never saw what was written</li><li>Watches KaiInTheSky; knows the Lucky 8 is a game weapon</li></ul></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subhead"><span class="side def">FOR THE DEFENSE</span><span class="rule"></span></div>
+
+    <div class="wit">
+      <div class="idcard def"><div class="mono">B</div><h3>Taylor Bennett</h3><small>Must call · the defendant</small></div>
+      <div>
+        <p class="quote">"Everything on here had to do with CodeBlue."</p>
+        <div class="cols">
+          <div class="col say"><h4>Says</h4><ul><li>Napkin was Hades strategy; Orpheus chosen because "I just had it on my mind"</li><li>Pre-scheduled the update June 3 ~5 p.m.</li><li>Lost the keycard on June 5, probably left on the desk</li><li>Shaffer sent them down at 8:42; saw Pierce with a black-and-blue flash drive; was hit from behind</li><li>Never told Pierce the code</li></ul></div>
+          <div class="col help"><h4>Helps Defense</h4><ul><li>Innocent explanation for every napkin term</li><li>Was a victim, hospitalized with a concussion</li><li>Pushed security hard (Caldwell incident)</li></ul></div>
+          <div class="col hurt"><h4>Cross on</h4><ul><li>$300K debt; Pierce said TotalSense would be "worth a fortune"</li><li>"Shaffer deserved to lose TotalSense"</li><li>Hid that Bagley is their mother; took photos down together</li><li>Used a public game code as a security code</li><li>Keycard "lost" the same day</li><li>Memory issues per Exhibit 6, yet "remembers everything"</li></ul></div>
+        </div>
+        <p class="note">Stipulation 12: Bennett is only familiar with the exhibits and facts from the interrogation (Exhibits 2, 6, 8, 14, 17 were shown).</p>
+      </div>
+    </div>
+
+    <div class="wit">
+      <div class="idcard def"><div class="mono">B</div><h3>Dr. Billie Barry</h3><small>Must call · expert in psychology</small></div>
+      <div>
+        <p class="quote">"The testimony elicited from Pierce during the interrogation is unreliable."</p>
+        <div class="cols">
+          <div class="col say"><h4>Says</h4><ul><li>Wade used 5 of 7 Davenport steps: positive confrontation, theme development (20 years vs. medical bills), handling denials, false choice, oral recitation</li><li>Mid-interview plea offer was extremely coercive</li><li>2024 study: ~60% coercive, ~75% of those Davenport</li></ul></div>
+          <div class="col help"><h4>Helps Defense</h4><ul><li>Attacks the State's key link to Bennett</li><li>Plea timing: offer came only after Pierce refused to name Bennett</li></ul></div>
+          <div class="col hurt"><h4>Cross on</h4><ul><li>Testifies only for defense (40 cases)</li><li>$6,000 + $120/hr × 30 hrs</li><li>Never spoke to Pierce or Wade; ignored the July 2 interview</li><li>Brother-in-law's false confession (bias)</li><li>Methods aren't illegal (Wade addendum)</li><li>704(b): can't opine on Bennett's mental state</li></ul></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wit">
+      <div class="idcard def"><div class="mono">C</div><h3>Aspen Caldwell</h3><small>Defense option (or Dawn)</small></div>
+      <div>
+        <p class="quote">"I know you're trying to pay those medical bills. I can make that happen. You just have to work with me."</p>
+        <div class="cols">
+          <div class="col say"><h4>Says</h4><ul><li>Overheard Shaffer's offer to Pierce, March 20; "home run"</li><li>Saw "code" and "Orpheus" in a folder marked "M.P." on Shaffer's desk, June 3</li><li>Saw Pierce with a keycard on June 4</li><li>Napkin is Bennett's handwriting</li></ul></div>
+          <div class="col help"><h4>Helps Defense</h4><ul><li>Supports a Shaffer-and-Pierce setup</li><li>Code was written down where others could see it</li><li>Bennett was strict on security</li></ul></div>
+          <div class="col hurt"><h4>Cross on</h4><ul><li>Now works for Bagley at nearly double pay</li><li>Fired by Shaffer; angry</li><li>Admitted eavesdropper; heater muffled the talk</li><li>Bennett tried to get her fired</li><li>Pierce said the keycard was Bennett's</li></ul></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wit">
+      <div class="idcard def"><div class="mono">D</div><h3>Kai Dawn</h3><small>Defense option (or Caldwell) · default if no notice</small></div>
+      <div>
+        <p class="quote">"I really can't imagine Bennett doing anything like this."</p>
+        <div class="cols">
+          <div class="col say"><h4>Says</h4><ul><li>Explains CodeBlue and every Hades door</li><li>"Bring the Lucky 8" was an inside joke</li><li>Orpheus was publicly found by players</li><li>Napkin handwriting matches Bennett's notes at the 750K event</li></ul></div>
+          <div class="col help"><h4>Helps Defense</h4><ul><li>Outsider with no stake in Solara or PrimeFrame</li><li>Gives the napkin an innocent meaning</li><li>Character: "laidback and nice"</li></ul></div>
+          <div class="col hurt"><h4>Cross on</h4><ul><li>Wants "juicy" trial content for 1M subs</li><li>Friends with both</li><li>June 4: "practicing," tech demo, sharp "shut up"</li><li>Pierce's "one way or another"</li><li>Dates March 17 vs. March 20</li><li>Never saw the napkin</li></ul></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block view" id="exhibits">
+  <div class="wrap">
+    <div class="head">
+      <div class="label">Pre-numbered · all authentic (Stip. 3)</div>
+      <h2>The evidence board</h2>
+      <p class="prose muted">Red cards are the ones most likely to decide the case. "Familiar" lists who can lay a foundation.</p>
+    </div>
+    <div class="polaroids">
+      <div class="pol"><div class="ph">1</div><h4>Bennett interrogation</h4><p>June 13 transcript. Ends when Bennett asks for a lawyer.</p><span class="who">Familiar: Wade</span></div>
+      <div class="pol key"><div class="ph">2</div><h4>Admin keycard</h4><p>Photo of the card found in Pierce's bedroom. 10–15 exist; scanner can't tell whose.</p><span class="who">Familiar: Wade, Shaffer, Cooper, Caldwell, Bennett</span></div>
+      <div class="pol key"><div class="ph">3</div><h4>Flash drive</h4><p>3(a) physical, 3(b) photo. Black drive from Pierce's computer; file recovered by disk drill.</p><span class="who">Familiar: Wade, Shaffer, Caldwell</span></div>
+      <div class="pol"><div class="ph">4</div><h4>Solara blueprint</h4><p>Ground floor and basement. Third floor (Shaffer's office, HR) not shown. Business record.</p><span class="who">Familiar: Wade, Shaffer, Cooper, Caldwell</span></div>
+      <div class="pol"><div class="ph">5</div><h4>TotalSense ad</h4><p>Advertisement planned for after Summer Games Fest.</p><span class="who">Familiar: Wade, Shaffer, Cooper, Caldwell</span></div>
+      <div class="pol"><div class="ph">6</div><h4>Hospital record</h4><p>Concussion, LOC, post-traumatic amnesia, six staples. Business record.</p><span class="who">Familiar: Bennett</span></div>
+      <div class="pol key"><div class="ph">7</div><h4>Pierce interrogations</h4><p>June 6 at CCPD (arrest) and July 2 at the Corrections Facility.</p><span class="who">Familiar: Wade, Pierce, Barry</span></div>
+      <div class="pol key"><div class="ph">8</div><h4>The napkin</h4><p>Orpheus · four minutes · shamrock 8. Bennett's handwriting (Stip. 11).</p><span class="who">Familiar: Wade, Cooper, Caldwell, Dawn, Bennett</span></div>
+      <div class="pol"><div class="ph">9</div><h4>Override screen</h4><p>Frozen scanner screenshot showing the code was accepted.</p><span class="who">Familiar: Wade, Shaffer</span></div>
+      <div class="pol key"><div class="ph">10</div><h4>Pierce plea deal</h4><p>Guilty plea, 10 years fully suspended if Pierce complies.</p><span class="who">Familiar: Wade, Pierce</span></div>
+      <div class="pol"><div class="ph">11</div><h4>Barry's CV</h4><p>Resume of the defense expert.</p><span class="who">Familiar: Barry</span></div>
+      <div class="pol"><div class="ph">12</div><h4>CodeBlue poster</h4><p>Ad for PrimeFrame's game.</p><span class="who">Familiar: Shaffer, Cooper, Caldwell, Dawn</span></div>
+      <div class="pol"><div class="ph">13</div><h4>Hades Company poster</h4><p>Ad for the campaign behind the napkin's terms.</p><span class="who">Familiar: Cooper, Caldwell, Dawn</span></div>
+      <div class="pol key"><div class="ph">14</div><h4>Pierce–Bennett texts</h4><p>The month before the robbery, from AT&amp;T by warrant. Business record.</p><span class="who">Familiar: Wade, Bennett</span></div>
+      <div class="pol"><div class="ph">15</div><h4>Shaffer–Bagley texts</h4><p>Their only texts since 2018. Bagley accuses Shaffer of stealing TotalSense.</p><span class="who">Familiar: Wade, Shaffer</span></div>
+      <div class="pol"><div class="ph">16</div><h4>Baseball bat</h4><p>Metal bat marked "Lucky 8," found in the bay.</p><span class="who">Familiar: Wade, Shaffer</span></div>
+      <div class="pol"><div class="ph">17</div><h4>Tech demo program</h4><p>Schedule made by Caldwell. Demo was set for 8:45 p.m.</p><span class="who">Familiar: Wade, Shaffer, Cooper, Caldwell, Bennett</span></div>
+      <div class="pol"><div class="ph">18</div><h4>Pierce's record</h4><p>2019 theft conviction. Business record.</p><span class="who">Familiar: Wade, Pierce</span></div>
+      <div class="pol key"><div class="ph">19</div><h4>Security log</h4><p>Veritas log, 8:40–8:45 p.m.: keycard 8:41, code 8:42.</p><span class="who">Familiar: Wade</span></div>
+    </div>
+    <p class="note">The images and text inside Exhibits 7, 14, 15, 17 and 19 are scanned pages that didn't come through as text. Descriptions here come from the witnesses. Check the printed exhibits for exact wording.</p>
+  </div>
+</section>
+
+<section class="block view" id="napkin">
+  <div class="wrap napkin-wrap">
+    <div class="napkin" aria-label="Recreation of the napkin">
+      <span class="n1">Orpheus</span>
+      <span class="n2">four minutes</span>
+      <span class="n3">☘ 8</span>
+      <span class="n4">EXHIBIT 8</span>
+      <span class="caption">Recreation from Wade's description, not the real exhibit</span>
+    </div>
+    <div class="stack">
+      <div class="label">Exhibit 8 · Stipulation 11</div>
+      <h2>One napkin, two stories</h2>
+      <p class="prose muted">Everyone agrees Bennett wrote it. The trial turns on what it means.</p>
+      <div class="decode">
+        <div class="h">Term</div><div class="h">State reads it as</div><div class="h">Defense reads it as</div>
+        <div class="term">Orpheus</div><div>The override code Bennett set on June 3</div><div>The public code that stops the health drain in Hades, door three</div>
+        <div class="term">four minutes</div><div>The 8:40–8:44 firmware shutdown</div><div>The Hades speedrun timer</div>
+        <div class="term">☘ 8</div><div>The Lucky 8 bat used on Bennett</div><div>Pierce's in-game Lucky 8 that Pierce kept forgetting</div>
+      </div>
+      <p class="prose" style="font-size:.92rem">Napkin was found crumpled on the hallway floor under the scanner, which suggests Pierce carried it to the bay. Cooper saw Bennett hand it over. Dawn and Caldwell link the terms to CodeBlue.</p>
+    </div>
+  </div>
+</section>
+
+<section class="block view" id="theories">
+  <div class="wrap">
+    <div class="head">
+      <div class="label">Case theory</div>
+      <h2>How each side tells it</h2>
+    </div>
+    <div class="vs">
+      <div class="theory state">
+        <span class="side state">THE STATE</span>
+        <h3 style="margin-top:10px">"An inside job with a game for a cover story."</h3>
+        <ol>
+          <li><b>Motive.</b> Bennett hated Shaffer for taking Bagley's idea, owed $300K, and said Shaffer "deserved to lose TotalSense."</li>
+          <li><b>Means.</b> Bennett suggested the update, picked the 4-minute window, set the code, and owned the keycard Pierce used.</li>
+          <li><b>Plan.</b> Mustang Tavern napkin, "stick to the plan," the Lucky 8 and the bat-swing gesture.</li>
+          <li><b>Slip.</b> June 4: Pierce mentions the demo and Bennett snaps "shut up."</li>
+          <li><b>Payoff.</b> OmniSense appears the next day: "What goes around, comes around."</li>
+        </ol>
+      </div>
+      <div class="theory def">
+        <span class="side def">THE DEFENSE</span>
+        <h3 style="margin-top:10px">"Pierce did it, and Shaffer pointed at Bennett."</h3>
+        <ol>
+          <li><b>Pierce's motive.</b> Cameron's bills, "one way or another," a 2019 theft, and Shaffer's offer to "make that happen."</li>
+          <li><b>Code elsewhere.</b> "Orpheus" sat in a folder on Shaffer's desk and was a public game code.</li>
+          <li><b>Napkin.</b> CodeBlue strategy, confirmed by an outside player.</li>
+          <li><b>Pierce's word.</b> Bought with a suspended sentence after Davenport-style pressure.</li>
+          <li><b>Victim.</b> Bennett was sent down and hit with the bat. Sloppy, biased investigation; footage never pulled.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block view" id="conflicts">
+  <div class="wrap">
+    <div class="head">
+      <div class="label">Impeachment ammo</div>
+      <h2>Where the stories don't match</h2>
+    </div>
+    <div class="conf">
+      <div class="cf"><h4>Where was Bennett interviewed?</h4><p>Wade: Bennett's home, 10 a.m., June 13. Exhibit 1: CCPD, 3:35–4:51 p.m.</p><div class="use">Cross Wade</div></div>
+      <div class="cf"><h4>Who was "M.P."?</h4><p>The folder with "Orpheus" was labeled M.P. Caldwell assumed Melissa Portman, but Portman said it was the wrong folder. Morgan Pierce has the same initials.</p><div class="use">Defense: Caldwell · cross Shaffer</div></div>
+      <div class="cf"><h4>Only two people knew the code</h4><p>Shaffer says only Shaffer and Bennett knew it, yet it was written in a folder on Shaffer's desk.</p><div class="use">Cross Shaffer</div></div>
+      <div class="cf"><h4>The cameras</h4><p>Wade didn't know cameras existed; footage was overwritten. Shaffer fired Caldwell based on June 3 camera footage.</p><div class="use">Cross Wade, Shaffer</div></div>
+      <div class="cf"><h4>Who started the March 20 deal?</h4><p>Shaffer: Pierce proposed it. Caldwell: Shaffer offered to cover the bills if Pierce would "work with me."</p><div class="use">Defense: Caldwell</div></div>
+      <div class="cf"><h4>When did Shaffer send Bennett down?</h4><p>Bennett: Shaffer ran up at 8:42. Shaffer: got the 8:42 alert, sent Bennett, saw someone run out at 8:45.</p><div class="use">Both sides</div></div>
+      <div class="cf"><h4>How long was the shutdown?</h4><p>Shaffer: about four minutes. Bennett: no longer than five. Log: 8:40–8:44.</p><div class="use">Minor; State uses "four minutes"</div></div>
+      <div class="cf"><h4>Was the file on the drive?</h4><p>Shaffer: the drive "contained" the file when recovered. Wade: the drive appeared blank; file was deleted and recovered by disk drill.</p><div class="use">Cross Shaffer</div></div>
+      <div class="cf"><h4>The keycard's travels</h4><p>Cooper: Bennett's lanyard gone June 3. Caldwell: Pierce had a card June 4, "returning it to Bennett." Bennett: lost it June 5.</p><div class="use">State strong point</div></div>
+      <div class="cf"><h4>Which day was the Shaffer meeting?</h4><p>Dawn: March 17, "today." Shaffer and Caldwell: March 20.</p><div class="use">Cross Dawn</div></div>
+      <div class="cf"><h4>When was the reveal?</h4><p>Shaffer: public reveal June 8 at Summer Games Fest. Bennett: "We were going to reveal it to the world the day the robbery happened."</p><div class="use">Cross Bennett</div></div>
+      <div class="cf"><h4>Bennett and Bagley</h4><p>Told Shaffer the relationship "was not that good." Told police they agreed together to scrub every photo.</p><div class="use">Cross Bennett</div></div>
+      <div class="cf"><h4>The hospital words</h4><p>Shaffer: "I've known you were a fraud… for eighteen months." Bennett: it was "maybe karma," blames pain meds.</p><div class="use">Both sides</div></div>
+      <div class="cf"><h4>Memory</h4><p>Exhibit 6: post-traumatic amnesia and short-term memory impairment. Bennett: "I remember everything."</p><div class="use">Cross Bennett (perception only, per SI 6)</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="block view" id="rules">
+  <div class="wrap">
+    <div class="head">
+      <div class="label">Maryland Mock Trial Rules</div>
+      <h2>Rules you'll actually use</h2>
+    </div>
+    <div class="grid g4" style="margin-bottom:22px">
+      <div class="card"><div class="num">42</div><p>minutes per side for all directs, crosses, redirects and voir dire</p></div>
+      <div class="card"><div class="num">5</div><p>minutes for opening (not counted in the 42)</p></div>
+      <div class="card"><div class="num">8</div><p>minutes for closing; the State's rebuttal comes out of its 8</p></div>
+      <div class="card"><div class="num">1</div><p>demonstrative per team; unlimited exact enlargements up to 24×36"</p></div>
+    </div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Objection / rule</th><th>Rule</th><th>Use it when</th></tr></thead>
+        <tbody>
+          <tr><td>Relevance</td><td class="r">401–402</td><td>It doesn't make a fact of consequence more or less likely. Sentencing talk is irrelevant here.</td></tr>
+          <tr><td>Unfair prejudice</td><td class="r">403</td><td>Probative value is substantially outweighed. Also the objection for burden-shifting and for "consciousness of guilt."</td></tr>
+          <tr><td>Character</td><td class="r">404</td><td>Using past acts to show someone acted the same way. Okay for motive, plan, knowledge, intent.</td></tr>
+          <tr><td>Personal knowledge</td><td class="r">602</td><td>Witness is guessing. One witness's firsthand testimony is enough; no second witness needed.</td></tr>
+          <tr><td>Prior conviction</td><td class="r">609</td><td>Felony within 10 years, or any dishonesty crime (Cooper's misrepresentation). Shaffer's PWID, Pierce's theft.</td></tr>
+          <tr><td>Leading</td><td class="r">611(c)</td><td>Your opponent suggests answers on direct. Leading is fine on cross.</td></tr>
+          <tr><td>Narrative / compound / argumentative</td><td class="r">611</td><td>Long story answers, two questions at once, badgering.</td></tr>
+          <tr><td>Refresh memory</td><td class="r">612</td><td>Witness forgets; show the affidavit silently, take it back, re-ask.</td></tr>
+          <tr><td>Lay opinion</td><td class="r">701</td><td>Dawn or Caldwell on handwriting; opinions must rest on their own perception.</td></tr>
+          <tr><td>Expert scope</td><td class="r">702 · 704(b)</td><td>Expert strays outside their field; Barry can't say what Bennett intended.</td></tr>
+          <tr><td>Hearsay</td><td class="r">801–802</td><td>Out-of-court statement offered for its truth. Not hearsay if offered to show it was said (an offer, a threat, effect on listener).</td></tr>
+          <tr><td>Party / co-conspirator</td><td class="r">801(d)(2)</td><td>Bennett's own statements come in against Bennett. Pierce's come in under (E) if a conspiracy is shown.</td></tr>
+          <tr><td>State of mind</td><td class="r">803(3)</td><td>Motive, intent, plan at the time ("I have a plan to pay those bills").</td></tr>
+          <tr><td>Business records</td><td class="r">803(6)</td><td>Exhibits 4, 6, 14, 18 are already stipulated.</td></tr>
+          <tr><td>Handwriting / voice ID</td><td class="r">901</td><td>Familiarity not gained for the lawsuit. Dawn's voice-chat ID of Bennett and Pierce.</td></tr>
+          <tr><td>Invention of fact</td><td class="r">Rule 9</td><td>No objection allowed. Impeach with the affidavit instead.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="block view" id="practice">
+  <div class="wrap">
+    <div class="head">
+      <div class="label">Cross-examination drills</div>
+      <h2>Practice on the stand</h2>
+      <p class="prose muted">Read the question out loud, answer, then reveal the best answer. Short and true wins.</p>
+    </div>
+
+    <div class="subhead"><h3>Kai Dawn</h3><span class="rule"></span></div>
+    <div class="qs" style="margin-top:14px">
+      <details class="q"><summary>You told Bennett's lawyers you hoped your testimony would be "juicy" enough to get you to a million subscribers, correct?</summary><div class="a"><b>Best:</b> "I said that. I'm under oath, and I'm only telling you what I saw." <i>Avoid:</i> a bare "yes" that leaves the bias hanging.</div></details>
+      <details class="q"><summary>You never saw the napkin in Exhibit 8 before this case, did you?</summary><div class="a"><b>Best:</b> "No, I hadn't." Short, no arguing.</div></details>
+      <details class="q"><summary>On June 4, 2026, Pierce said they'd been "practicing," mentioned the Solara tech demo, and Bennett told Pierce to shut up. Correct?</summary><div class="a"><b>Best:</b> "Yes." Let redirect explain. <i>Avoid:</i> asking the attorney what time it was.</div></details>
+      <details class="q"><summary>Pierce told you they needed to pay Cameron's bills "one way or another," didn't they?</summary><div class="a"><b>Best:</b> "Yes, Pierce said that." <i>Avoid:</i> snark. Judges score demeanor.</div></details>
+      <details class="q"><summary>You say the Shaffer meeting was March 17, but Shaffer and Caldwell say March 20. You could be wrong?</summary><div class="a"><b>Best:</b> "My memory isn't perfect on dates, but I tied it to the St. Patrick's campaign." <i>Avoid:</i> "My memory isn't good" or claiming you called it an estimate.</div></details>
+      <details class="q"><summary>You weren't at Solara on June 5, 2026, were you?</summary><div class="a"><b>Best:</b> "No, I wasn't."</div></details>
+      <details class="q"><summary>You haven't spoken to either of them since June 4, so you don't know what they did on June 5?</summary><div class="a"><b>Best:</b> "Correct." <i>Avoid:</i> "I knew something was wrong," which is speculation that helps the State.</div></details>
+      <details class="q"><summary>You stream PrimeFrame's game, and PrimeFrame's CEO is Bennett's mother. Your channel depends on her game, correct?</summary><div class="a"><b>Best:</b> "I stream on Clutch and CodeBlue is my main game. I don't know anything about Bennett's mother." Split compound questions.</div></details>
+      <details class="q"><summary>You couldn't see Bennett's face over voice chat, so you can't know what "shut up" meant?</summary><div class="a"><b>Best:</b> "No." This one helps Bennett: it weakens the "sharper" tone.</div></details>
+      <details class="q"><summary>Your opinion that Bennett is "laidback" rests on five months of talking over a game, even though Bennett mocked Cameron's cancer?</summary><div class="a"><b>Best:</b> "I met Bennett in person too. I only heard about the Cameron comment from Pierce. They argued in March, but by the next week they were friends again."</div></details>
+    </div>
+
+    <div class="subhead"><h3>Aspen Caldwell</h3><span class="rule"></span></div>
+    <div class="qs" style="margin-top:14px">
+      <details class="q"><summary>You now work for Jennifer Bagley, Bennett's mother, at nearly double your Solara pay?</summary><div class="a"><b>Best:</b> "Yes. She offered me the job after I was fired."</div></details>
+      <details class="q"><summary>The door was closed and the heater drowned out part of the conversation, correct?</summary><div class="a"><b>Best:</b> "Parts were muffled, but I clearly heard 'I can make that happen. You just have to work with me.'"</div></details>
+      <details class="q"><summary>You saw Pierce with a keycard on June 4, and Pierce said it was Bennett's?</summary><div class="a"><b>Best:</b> "Pierce said that. I don't know if it was true."</div></details>
+      <details class="q"><summary>Bennett reported you and tried to get you fired, so you're angry at Bennett?</summary><div class="a"><b>Best:</b> "I was annoyed then, but Bennett was doing the right thing for security." This also helps the Defense.</div></details>
+    </div>
+
+    <div class="subhead"><h3>Taylor Bennett</h3><span class="rule"></span></div>
+    <div class="qs" style="margin-top:14px">
+      <details class="q"><summary>You chose a code anyone playing The Hades Company could find online as the code to the most secure room in the building?</summary><div class="a"><b>Best:</b> "Yes, it was on my mind. That was a mistake, but the code alone was useless without an admin keycard."</div></details>
+      <details class="q"><summary>You told police "Shaffer deserved to lose TotalSense," didn't you?</summary><div class="a"><b>Best:</b> "I said that out of anger. Being angry isn't planning a robbery."</div></details>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="block view" id="ai-court">
+  <div class="wrap">
+    <div class="head">
+      <div class="label">Live AI · mock of the mock trial</div>
+      <h2>AI Courtroom</h2>
+      <p class="prose muted">Practice against Claude. Get crossed on your witness, cross-examine an AI witness who sticks to their affidavit, or argue objections to an AI judge. You can talk or type, and Claude can read its lines out loud.</p>
+    </div>
+
+    <div class="court">
+      <aside class="court-side">
+        <div class="field">
+          <span class="flabel">Mode</span>
+          <div class="modes" role="radiogroup" aria-label="Mode">
+            <button type="button" class="mode on" data-mode="crossme" role="radio" aria-checked="true"><b>Cross me</b><small>AI is opposing counsel. You're the witness.</small></button>
+            <button type="button" class="mode" data-mode="witness" role="radio" aria-checked="false"><b>Examine a witness</b><small>AI plays the witness. You're the attorney.</small></button>
+            <button type="button" class="mode" data-mode="judge" role="radio" aria-checked="false"><b>Ask the judge</b><small>Argue objections. Get rulings with rule numbers.</small></button>
+          </div>
+        </div>
+        <div class="field" id="witField">
+          <label class="flabel" for="witSel">Witness</label>
+          <select id="witSel">
+            <option value="dawn">Kai Dawn · Defense</option>
+            <option value="caldwell">Aspen Caldwell · Defense</option>
+            <option value="bennett">Taylor Bennett · Defense</option>
+            <option value="barry">Dr. Billie Barry · Defense</option>
+            <option value="wade">Sgt. Dallas Wade · State</option>
+            <option value="pierce">Morgan Pierce · State</option>
+            <option value="shaffer">Jordan Shaffer · State</option>
+            <option value="cooper">Quinn Cooper · State</option>
+          </select>
+        </div>
+        <div class="field" id="examField">
+          <label class="flabel" for="examSel">Examination</label>
+          <select id="examSel">
+            <option value="cross">Cross (leading allowed)</option>
+            <option value="direct">Direct (no leading)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="flabel" for="toughSel">Difficulty</label>
+          <select id="toughSel">
+            <option value="regional">Regionals</option>
+            <option value="state" selected>State finals</option>
+            <option value="brutal">Brutal</option>
+          </select>
+        </div>
+        <button type="button" class="btn" id="courtStart">Start session</button>
+        <p class="court-note" id="courtNote">Connecting to the AI…</p>
+      </aside>
+
+      <div class="court-main">
+        <div class="court-bar">
+          <span class="live" id="courtLive"><i></i><span id="courtRole">Court not in session</span></span>
+          <div class="court-tools">
+            <button type="button" class="tool" id="speakBtn" aria-pressed="false" hidden>🔈 Read aloud</button>
+            <button type="button" class="tool" id="coachBtn" disabled>Coach me</button>
+            <button type="button" class="tool" id="resetBtn" disabled>Reset</button>
+          </div>
+        </div>
+        <div class="log" id="courtLog" aria-live="polite">
+          <div class="msg sys"><b>Clerk</b><p>Pick a mode and a witness, then press <b>Start session</b>. Example: "Cross me" with Kai Dawn gives you a fresh run of the drill we did, with coaching after every answer.</p></div>
+        </div>
+        <form class="composer" id="courtForm">
+          <label for="courtIn" class="sr">Your answer or question</label>
+          <textarea id="courtIn" rows="2" placeholder="Start a session first…" disabled></textarea>
+          <button type="button" class="tool mic" id="micBtn" hidden aria-label="Speak your answer">🎙</button>
+          <button type="submit" class="btn pink" id="sendBtn" disabled>Send</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block view" id="games">
+  <div class="wrap">
+    <div class="head">
+      <div class="label">Arcade // two playable sims</div>
+      <h2>Play the case</h2>
+      <p class="prose muted">Two real 2D games. Portal Breaker drops you into the Hades Company portal room Dawn describes. Objection Rush drills the evidence rules at speed. Best scores save on this device.</p>
+    </div>
+    <div class="games">
+      <div class="gamebox">
+        <div class="gtag">GAME 01 // CODEBLUE: THE HADES COMPANY</div>
+        <h3>Portal Breaker</h3>
+        <div class="screen"><canvas id="pb" width="960" height="600" aria-label="Portal Breaker game"></canvas></div>
+        <div class="ctrls">
+          <span>Move: WASD / arrows · touch: drag anywhere · auto-fire is on · grab the ☘ 8</span>
+          <button class="btn" id="pbStart" type="button">Start run</button>
+        </div>
+      </div>
+      <div class="gamebox">
+        <div class="gtag">GAME 02 // MARYLAND MOCK TRIAL RULES OF EVIDENCE</div>
+        <h3>Objection Rush</h3>
+        <div class="screen"><canvas id="or" width="960" height="600" aria-label="Objection Rush game"></canvas></div>
+        <div class="pad" id="orPad"><button type="button" data-d="-1" aria-label="Move left">◀</button><button type="button" data-d="1" aria-label="Move right">▶</button></div>
+        <div class="ctrls">
+          <span>Steer: ← → or A / D · touch: tap left or right side · fly through the right ruling</span>
+          <button class="btn pink" id="orStart" type="button">Start trial</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Built from the 2026–27 MYLaw case file and Rules &amp; Resources. Student study guide, not legal advice. Facts beyond the packet are invention of fact; check page cites before trial.</p>
+  </div>
+</footer>
+
+<script>
+
+/* ---------- menu router ---------- */
+(function(){
+  var ORDER=[['overview','Home'],['ai-court','AI Courtroom'],['games','Arcade'],['law','What must be proven'],['rulings','Rulings & stipulations'],['rules','Rules & objections'],['people','Who\'s who'],['timeline','Timeline'],['night','June 5 · 8:40'],['napkin','The napkin'],['exhibits','Evidence board'],['witnesses','Witnesses'],['theories','Case theories'],['conflicts','Contradictions'],['practice','Cross drills']];var IDS=ORDER.map(function(o){return o[0]});
+  var views=[].slice.call(document.querySelectorAll('.view')),links=[].slice.call(document.querySelectorAll('.menu a')),rail=document.getElementById('rail'),mb=document.getElementById('menuBtn');
+  views.forEach(function(v){if(v.id==='overview')return;var i=IDS.indexOf(v.id),w=v.querySelector('.wrap');if(!w)return;var p=document.createElement('div');p.className='pager';
+    var pv=ORDER[i-1],nx=ORDER[i+1];p.innerHTML=(pv?'<a href="#'+pv[0]+'">← '+pv[1]+'</a>':'')+(nx?'<a class="next" href="#'+nx[0]+'">'+nx[1]+' →</a>':'');w.appendChild(p)});
+  function show(){var id=(location.hash||'#overview').slice(1);if(!document.getElementById(id)||!document.getElementById(id).classList.contains('view'))id='overview';
+    views.forEach(function(v){v.classList.toggle('on',v.id===id)});links.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+id)});
+    rail.classList.remove('open');mb.setAttribute('aria-expanded','false');window.scrollTo(0,0);
+    window.dispatchEvent(new Event('viewchange'))}
+  mb.addEventListener('click',function(){var o=rail.classList.toggle('open');mb.setAttribute('aria-expanded',o)});
+  window.addEventListener('hashchange',show);show();
+})();
+
+var REDUCED=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+function store(k,v){try{if(v===undefined)return +localStorage.getItem(k)||0;localStorage.setItem(k,v)}catch(e){return 0}}
+
+/* ---------- background particle field ---------- */
+(function(){
+  var c=document.getElementById('field'),x=c.getContext('2d'),W,H,P=[],mx=0,my=0,dpr=Math.min(2,window.devicePixelRatio||1);
+  function size(){W=innerWidth;H=innerHeight;c.width=W*dpr;c.height=H*dpr;x.setTransform(dpr,0,0,dpr,0,0)}
+  size();addEventListener('resize',size);
+  var N=Math.min(110,Math.floor(innerWidth/12));
+  for(var i=0;i<N;i++)P.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,r:Math.random()*1.6+.3,h:Math.random()<.5?'51,240,255':(Math.random()<.5?'255,61,154':'155,107,255')});
+  addEventListener('pointermove',function(e){mx=(e.clientX/W-.5);my=(e.clientY/H-.5)},{passive:true});
+  function draw(){
+    x.clearRect(0,0,W,H);
+    var ox=mx*18,oy=my*18-scrollY*.04%H;
+    for(var i=0;i<P.length;i++){var p=P[i];p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0}
+    for(i=0;i<P.length;i++){var a=P[i];
+      for(var j=i+1;j<P.length;j++){var b=P[j],dx=a.x-b.x,dy=a.y-b.y,d=dx*dx+dy*dy;
+        if(d<11000){x.strokeStyle='rgba(120,140,255,'+(0.13*(1-d/11000))+')';x.lineWidth=1;x.beginPath();x.moveTo(a.x+ox,a.y+oy);x.lineTo(b.x+ox,b.y+oy);x.stroke()}}
+      x.fillStyle='rgba('+a.h+',.85)';x.shadowColor='rgba('+a.h+',1)';x.shadowBlur=8;x.beginPath();x.arc(a.x+ox,a.y+oy,a.r,0,7);x.fill();x.shadowBlur=0}
+    if(!REDUCED)requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ---------- shared canvas helpers ---------- */
+function wrap(ctx,text,maxW){var w=text.split(' '),lines=[],l='';for(var i=0;i<w.length;i++){var t=l?l+' '+w[i]:w[i];if(ctx.measureText(t).width>maxW&&l){lines.push(l);l=w[i]}else l=t}if(l)lines.push(l);return lines}
+function glowText(ctx,t,x,y,col,blur){ctx.shadowColor=col;ctx.shadowBlur=blur||14;ctx.fillStyle=col;ctx.fillText(t,x,y);ctx.shadowBlur=0}
+function gridBG(ctx,W,H,t,col){
+  ctx.fillStyle='#02030a';ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle=col;ctx.lineWidth=1;var s=40,o=(t*20)%s;
+  for(var gx=-o;gx<W;gx+=s){ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,H);ctx.stroke()}
+  for(var gy=o;gy<H;gy+=s){ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W,gy);ctx.stroke()}
+}
+function inView(el){var r=el.getBoundingClientRect();return r.bottom>0&&r.top<innerHeight}
+
+/* =========================================================
+   GAME 1 — PORTAL BREAKER
+   ========================================================= */
+(function(){
+  var cv=document.getElementById('pb'),ctx=cv.getContext('2d'),W=960,H=600,btn=document.getElementById('pbStart');
+  var keys={},S=null,running=false,last=0,best=store('pb_best');
+  var touch={on:false,ax:0,ay:0,dx:0,dy:0};
+  addEventListener('keydown',function(e){keys[e.key.toLowerCase()]=true;if(running&&inView(cv)&&['arrowup','arrowdown','arrowleft','arrowright',' '].indexOf(e.key.toLowerCase())>-1)e.preventDefault()});
+  addEventListener('keyup',function(e){keys[e.key.toLowerCase()]=false});
+  function cpos(e){var r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}}
+  cv.addEventListener('pointerdown',function(e){var p=cpos(e);touch={on:true,ax:p.x,ay:p.y,dx:0,dy:0};cv.setPointerCapture(e.pointerId)});
+  cv.addEventListener('pointermove',function(e){if(!touch.on)return;var p=cpos(e);touch.dx=p.x-touch.ax;touch.dy=p.y-touch.ay});
+  ['pointerup','pointercancel'].forEach(function(n){cv.addEventListener(n,function(){touch.on=false})});
+
+  function newLevel(lv,score){
+    var side=Math.random();
+    return{lv:lv,score:score||0,time:240,
+      p:{x:W/2,y:H/2,r:13,hp:5,inv:0,ang:0},
+      portal:{x:150+Math.random()*660,y:110+Math.random()*80,hp:50+lv*25,max:50+lv*25,pulse:0},
+      en:[],shots:[],parts:[],spawn:1.2,fire:0,
+      lucky:null,luckyT:6,power:0,flash:0,msg:'',msgT:0,state:'play'};
+  }
+  function boom(x,y,col,n){for(var i=0;i<n;i++){var a=Math.random()*7,s=60+Math.random()*240;S.parts.push({x:x,y:y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:.6+Math.random()*.5,c:col})}}
+  function nearest(){var p=S.p,b=null,bd=1e9;S.en.forEach(function(e){var d=(e.x-p.x)**2+(e.y-p.y)**2;if(d<bd){bd=d;b=e}});if(!b||bd>380*380)b=S.portal;return b}
+
+  function update(dt){
+    var p=S.p,t;S.time-=dt;if(S.time<=0){S.time=0;return end('TIME EXPIRED')}
+    // move
+    var mx=0,my=0;
+    if(keys.a||keys.arrowleft)mx--;if(keys.d||keys.arrowright)mx++;if(keys.w||keys.arrowup)my--;if(keys.s||keys.arrowdown)my++;
+    if(touch.on){var m=Math.hypot(touch.dx,touch.dy);if(m>8){mx=touch.dx/Math.max(m,40);my=touch.dy/Math.max(m,40)}}
+    var ml=Math.hypot(mx,my);if(ml>1){mx/=ml;my/=ml}
+    var sp=S.power>0?290:240;p.x=Math.max(p.r,Math.min(W-p.r,p.x+mx*sp*dt));p.y=Math.max(p.r,Math.min(H-p.r,p.y+my*sp*dt));
+    if(ml>0)p.ang=Math.atan2(my,mx);
+    p.inv=Math.max(0,p.inv-dt);S.power=Math.max(0,S.power-dt);S.flash=Math.max(0,S.flash-dt);S.msgT=Math.max(0,S.msgT-dt);
+    // fire
+    S.fire-=dt;if(S.fire<=0){S.fire=S.power>0?.11:.2;var tg=nearest(),a=Math.atan2(tg.y-p.y,tg.x-p.x);S.shots.push({x:p.x,y:p.y,vx:Math.cos(a)*620,vy:Math.sin(a)*620,l:1.1})}
+    // spawn enemies
+    S.spawn-=dt;var rate=Math.max(.28,1.15-S.lv*.12-(240-S.time)*.0025);
+    if(S.spawn<=0){S.spawn=rate;var a2=Math.random()*7;S.en.push({x:S.portal.x+Math.cos(a2)*40,y:S.portal.y+Math.sin(a2)*40,r:11,sp:70+S.lv*14+Math.random()*50,hp:1+(Math.random()<.15*S.lv?1:0),wob:Math.random()*7})}
+    // lucky 8
+    if(!S.lucky){S.luckyT-=dt;if(S.luckyT<=0)S.lucky={x:80+Math.random()*(W-160),y:220+Math.random()*(H-280),t:0}}
+    else{S.lucky.t+=dt;if(Math.hypot(S.lucky.x-p.x,S.lucky.y-p.y)<34){S.power=8;S.lucky=null;S.luckyT=14;S.msg='LUCKY 8 EQUIPPED';S.msgT=1.6;boom(p.x,p.y,'#7dffb0',40)}}
+    // shots
+    S.shots.forEach(function(s){s.x+=s.vx*dt;s.y+=s.vy*dt;s.l-=dt;
+      if(Math.hypot(s.x-S.portal.x,s.y-S.portal.y)<46){s.l=0;S.portal.hp-=S.power>0?3:1;S.portal.pulse=.15;boom(s.x,s.y,'#ff3d9a',4)}
+      S.en.forEach(function(e){if(e.hp>0&&Math.hypot(s.x-e.x,s.y-e.y)<e.r+4){s.l=0;e.hp--;if(e.hp<=0){S.score+=10;boom(e.x,e.y,'#ff3d9a',14)}}})});
+    S.shots=S.shots.filter(function(s){return s.l>0&&s.x>-20&&s.x<W+20&&s.y>-20&&s.y<H+20});
+    // enemies
+    S.en.forEach(function(e){e.wob+=dt*6;var a=Math.atan2(p.y-e.y,p.x-e.x);e.x+=(Math.cos(a)*e.sp+Math.cos(e.wob)*30)*dt;e.y+=(Math.sin(a)*e.sp+Math.sin(e.wob)*30)*dt;
+      var d=Math.hypot(p.x-e.x,p.y-e.y);
+      if(S.power>0&&d<66&&e.hp>0){e.hp=0;S.score+=15;boom(e.x,e.y,'#7dffb0',16)}
+      else if(d<p.r+e.r&&e.hp>0&&p.inv<=0){e.hp=0;p.hp--;p.inv=1.1;S.flash=.25;boom(p.x,p.y,'#33f0ff',24)}});
+    S.en=S.en.filter(function(e){return e.hp>0});
+    S.parts.forEach(function(q){q.x+=q.vx*dt;q.y+=q.vy*dt;q.vx*=.94;q.vy*=.94;q.l-=dt});S.parts=S.parts.filter(function(q){return q.l>0});
+    S.portal.pulse=Math.max(0,S.portal.pulse-dt);
+    if(p.hp<=0)return end('SIGNAL LOST');
+    if(S.portal.hp<=0){var bonus=Math.round(S.time*5);S.score+=bonus+250*S.lv;boom(S.portal.x,S.portal.y,'#ffd36b',140);S.state='clear';S.clearBonus=bonus;finish()}
+  }
+  function end(why){S.state='over';S.why=why;finish()}
+  function finish(){running=false;if(S.score>best){best=S.score;store('pb_best',best)}
+    btn.textContent=S.state==='clear'?'Next portal':'Run again';draw(0)}
+
+  function hearts(n,x,y){for(var i=0;i<5;i++){ctx.fillStyle=i<n?'#33f0ff':'rgba(51,240,255,.15)';ctx.shadowColor='#33f0ff';ctx.shadowBlur=i<n?10:0;ctx.fillRect(x+i*18,y,12,12);ctx.shadowBlur=0}}
+  function draw(time){
+    gridBG(ctx,W,H,time/1000,'rgba(155,107,255,.10)');
+    if(!S){title();return}
+    var P=S.portal,p=S.p,t=time/1000;
+    // portal
+    var pr=46+Math.sin(t*4)*3+P.pulse*30;
+    for(var k=4;k>0;k--){ctx.strokeStyle='rgba(255,61,154,'+(.18*k)+')';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(P.x,P.y,pr+k*9,(pr+k*9)*.62,t*(k%2?1:-1)*.8,0,7);ctx.stroke()}
+    var g=ctx.createRadialGradient(P.x,P.y,4,P.x,P.y,pr);g.addColorStop(0,'#fff');g.addColorStop(.25,'#ff3d9a');g.addColorStop(1,'rgba(155,107,255,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(P.x,P.y,pr,0,7);ctx.fill();
+    // portal hp
+    ctx.fillStyle='rgba(255,61,154,.2)';ctx.fillRect(P.x-60,P.y-pr-34,120,6);ctx.fillStyle='#ff3d9a';ctx.fillRect(P.x-60,P.y-pr-34,120*Math.max(0,P.hp)/P.max,6);
+    // lucky
+    if(S.lucky){var L=S.lucky,bob=Math.sin(L.t*5)*5;ctx.font='700 30px "Unbounded",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.strokeStyle='rgba(125,255,176,.6)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(L.x,L.y+bob,24+Math.sin(L.t*8)*3,0,7);ctx.stroke();glowText(ctx,'☘8',L.x,L.y+bob,'#7dffb0',18)}
+    // shots
+    ctx.fillStyle=S.power>0?'#7dffb0':'#33f0ff';ctx.shadowColor=ctx.fillStyle;ctx.shadowBlur=10;S.shots.forEach(function(s){ctx.fillRect(s.x-2.5,s.y-2.5,5,5)});ctx.shadowBlur=0;
+    // enemies
+    S.en.forEach(function(e){ctx.save();ctx.translate(e.x,e.y);ctx.rotate(e.wob*.5);ctx.strokeStyle='#ff3d9a';ctx.lineWidth=2;ctx.shadowColor='#ff3d9a';ctx.shadowBlur=12;ctx.beginPath();ctx.moveTo(0,-e.r);ctx.lineTo(e.r,0);ctx.lineTo(0,e.r);ctx.lineTo(-e.r,0);ctx.closePath();ctx.stroke();if(e.hp>1){ctx.fillStyle='rgba(255,61,154,.5)';ctx.fill()}ctx.restore()});
+    // player
+    if(!(p.inv>0&&Math.floor(t*20)%2)){
+      if(S.power>0){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(t*12);ctx.strokeStyle='#7dffb0';ctx.lineWidth=7;ctx.shadowColor='#7dffb0';ctx.shadowBlur=22;ctx.beginPath();ctx.moveTo(14,0);ctx.lineTo(62,0);ctx.stroke();ctx.restore();
+        ctx.strokeStyle='rgba(125,255,176,.25)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,64,0,7);ctx.stroke()}
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.ang);ctx.fillStyle='#33f0ff';ctx.shadowColor='#33f0ff';ctx.shadowBlur=18;ctx.beginPath();ctx.moveTo(p.r+4,0);ctx.lineTo(-p.r,p.r*.85);ctx.lineTo(-p.r*.4,0);ctx.lineTo(-p.r,-p.r*.85);ctx.closePath();ctx.fill();ctx.restore();ctx.shadowBlur=0}
+    // particles
+    S.parts.forEach(function(q){ctx.globalAlpha=Math.max(0,q.l);ctx.fillStyle=q.c;ctx.fillRect(q.x-2,q.y-2,4,4)});ctx.globalAlpha=1;
+    if(S.flash>0){ctx.fillStyle='rgba(255,61,154,'+(S.flash*1.4)+')';ctx.fillRect(0,0,W,H)}
+    // HUD
+    ctx.textAlign='left';ctx.textBaseline='top';ctx.font='500 15px "JetBrains Mono",monospace';
+    glowText(ctx,'SCORE '+String(S.score).padStart(5,'0'),20,18,'#e9edff',6);
+    ctx.fillStyle='#8c93bd';ctx.fillText('PORTAL '+S.lv+'  ·  BEST '+best,20,40);
+    hearts(p.hp,20,64);
+    var m=Math.floor(S.time/60),s=Math.floor(S.time%60);ctx.textAlign='right';ctx.font='700 30px "Unbounded",sans-serif';
+    glowText(ctx,m+':'+String(s).padStart(2,'0'),W-20,16,S.time<30?'#ff3d9a':'#ffd36b',16);
+    ctx.font='500 12px "JetBrains Mono",monospace';ctx.fillStyle='#8c93bd';ctx.fillText('SPEEDRUN CLOCK',W-20,54);
+    if(S.power>0){ctx.fillStyle='#7dffb0';ctx.fillText('LUCKY 8 · '+S.power.toFixed(1)+'s',W-20,74)}
+    if(S.msgT>0){ctx.textAlign='center';ctx.font='700 34px "Unbounded",sans-serif';ctx.globalAlpha=Math.min(1,S.msgT);glowText(ctx,S.msg,W/2,H/2-150,'#7dffb0',22);ctx.globalAlpha=1}
+    if(S.state!=='play')overlay();
+  }
+  function title(){
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.font='700 64px "Unbounded",sans-serif';glowText(ctx,'PORTAL',W/2,H/2-90,'#33f0ff',30);glowText(ctx,'BREAKER',W/2,H/2-20,'#ff3d9a',30);
+    ctx.font='400 17px "Chakra Petch",sans-serif';ctx.fillStyle='#c8cdf0';
+    ctx.fillText('The Hades Company · door one. Enemies pour from the portal.',W/2,H/2+50);
+    ctx.fillText('Destroy it before the 4:00 clock runs out. Don\'t forget the Lucky 8.',W/2,H/2+76);
+    ctx.font='500 13px "JetBrains Mono",monospace';ctx.fillStyle='#8c93bd';ctx.fillText('BEST SCORE '+best+'   ·   PRESS START RUN',W/2,H/2+130);
+  }
+  function overlay(){
+    ctx.fillStyle='rgba(2,3,10,.72)';ctx.fillRect(0,0,W,H);ctx.textAlign='center';ctx.textBaseline='middle';
+    if(S.state==='clear'){ctx.font='700 48px "Unbounded",sans-serif';glowText(ctx,'PORTAL DESTROYED',W/2,H/2-60,'#ffd36b',26);
+      ctx.font='500 16px "JetBrains Mono",monospace';ctx.fillStyle='#e9edff';ctx.fillText('Time bonus +'+S.clearBonus+'   ·   score '+S.score,W/2,H/2);
+      ctx.fillStyle='#8c93bd';ctx.fillText('"Because Pierce had the Lucky 8, destroying the portal was usually easy." — Dawn',W/2,H/2+40)}
+    else{ctx.font='700 48px "Unbounded",sans-serif';glowText(ctx,S.why,W/2,H/2-60,'#ff3d9a',26);
+      ctx.font='500 16px "JetBrains Mono",monospace';ctx.fillStyle='#e9edff';ctx.fillText('Final score '+S.score+'   ·   best '+best,W/2,H/2);
+      ctx.fillStyle='#8c93bd';ctx.fillText('Pierce once forgot the Lucky 8 and lost in 30 seconds.',W/2,H/2+40)}
+  }
+  function loop(ts){if(!running)return;var dt=Math.min(.05,(ts-last)/1000);last=ts;update(dt);if(running)draw(ts);requestAnimationFrame(loop)}
+  btn.addEventListener('click',function(){
+    if(S&&S.state==='clear')S=newLevel(S.lv+1,S.score);else S=newLevel(1,0);
+    running=true;btn.textContent='Running…';last=performance.now();requestAnimationFrame(loop);cv.focus&&cv.focus();
+  });
+  function idle(ts){if(!running&&(!S))draw(ts||0);if(!S)requestAnimationFrame(idle)}
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){draw(0)});
+  idle(0);
+})();
+
+/* =========================================================
+   GAME 2 — OBJECTION RUSH
+   ========================================================= */
+(function(){
+  var cv=document.getElementById('or'),ctx=cv.getContext('2d'),W=960,H=600,btn=document.getElementById('orStart');
+  var OPTS=['HEARSAY','LEADING','SPECULATION','RELEVANCE','403 · PREJUDICE','COMPOUND','NARRATIVE','ARGUMENTATIVE','NO OBJECTION'];
+  var Q=[
+    {who:'Defense direct of Kai Dawn',line:'"You\'d agree Bennett is a really laidback person, wouldn\'t you?"',a:'LEADING',why:'Rule 611(c): no leading questions on your own witness. Try: "How would you describe Bennett?"'},
+    {who:'State cross of Kai Dawn',line:'"Isn\'t it true you want this trial to get you to a million subscribers?"',a:'NO OBJECTION',why:'Leading is allowed on cross, and bias is always fair game.'},
+    {who:'Defense direct of Kai Dawn',line:'"What do you think Bennett was planning for June 5?"',a:'SPECULATION',why:'Rule 602: Dawn wasn\'t there and has no personal knowledge of any plan.'},
+    {who:'State direct of Sgt. Wade',line:'"Cooper told me Bennett wrote on that napkin, so that\'s what happened."',a:'HEARSAY',why:'Cooper\'s out-of-court words offered to prove Bennett wrote it. Cooper must say it himself.'},
+    {who:'State direct of Jordan Shaffer',line:'"How many years could Bennett get if convicted?"',a:'RELEVANCE',why:'Bifurcated trial: sentencing is irrelevant in the guilt phase (Rule 401, Stip. 4).'},
+    {who:'State cross of Taylor Bennett',line:'"You owed $300,000, you hated Shaffer, and you set the code, right?"',a:'COMPOUND',why:'Three questions in one. Each fact needs its own question.'},
+    {who:'State closing',line:'"Bennett asked for a lawyer the second things got hard. Innocent people don\'t do that."',a:'403 · PREJUDICE',why:'The court granted the motion: no using the request for counsel as consciousness of guilt.'},
+    {who:'Defense direct of Aspen Caldwell',line:'"Tell the jury everything that happened at Solara from September to June."',a:'NARRATIVE',why:'Calls for a long story. Break it into focused, open-ended questions.'},
+    {who:'Defense cross of Quinn Cooper',line:'"You lie for money! Admit it! You\'re lying right now, aren\'t you?"',a:'ARGUMENTATIVE',why:'Badgering the witness. Make the point with facts: the $500 tip, the $3,000 article, the 2023 conviction.'},
+    {who:'Defense direct of Aspen Caldwell',line:'"I heard Shaffer say: I can make that happen. You just have to work with me."',a:'NO OBJECTION',why:'Offered to show an offer was made, not that it\'s true. A verbal act is not hearsay, and Caldwell heard it firsthand.'},
+    {who:'State cross of Taylor Bennett',line:'"You told police Shaffer deserved to lose TotalSense, didn\'t you?"',a:'NO OBJECTION',why:'Bennett\'s own statement offered against Bennett: an opposing party\'s statement under 801(d)(2)(A).'},
+    {who:'State closing',line:'"The defense never proved where that keycard went. That was their job."',a:'403 · PREJUDICE',why:'Burden-shifting. Bennett has no duty to prove anything.'},
+    {who:'Defense direct of Kai Dawn',line:'"I bet Pierce used Bennett\'s card to get in."',a:'SPECULATION',why:'A guess, not an observation. Dawn has no personal knowledge.'},
+    {who:'State direct of Sgt. Wade',line:'"Isn\'t it true the napkin says Orpheus right on it?"',a:'LEADING',why:'Leading on direct. Ask: "What, if anything, was written on the napkin?"'},
+    {who:'Defense direct of Dr. Barry',line:'"Did Bennett intend to rob Solara?"',a:'SPECULATION',why:'Rule 704(b) bars an expert from opining on the defendant\'s mental state, and Barry never evaluated Bennett.'},
+    {who:'State cross of Aspen Caldwell',line:'"You now work for Bennett\'s mother at nearly double your old pay?"',a:'NO OBJECTION',why:'Classic bias question. Fully proper on cross.'},
+    {who:'Defense direct of Taylor Bennett',line:'"What happened after you reached the development bay?"',a:'NO OBJECTION',why:'Open-ended, focused, and Bennett has personal knowledge. A model direct question.'},
+    {who:'State direct of Shaffer',line:'"Pierce told me Bennett and Pierce weren\'t on speaking terms, so they weren\'t."',a:'HEARSAY',why:'Pierce\'s out-of-court statement offered for its truth.'}
+  ];
+  var LX=[W/6,W/2,5*W/6],GH=74;
+  var S=null,running=false,last=0,best=store('or_best');
+  function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
+  function move(d){if(!S||S.state!=='play')return;S.lane=Math.max(0,Math.min(2,S.lane+d))}
+  addEventListener('keydown',function(e){if(!running)return;var k=e.key.toLowerCase();if(k==='arrowleft'||k==='a'){move(-1);if(inView(cv))e.preventDefault()}if(k==='arrowright'||k==='d'){move(1);if(inView(cv))e.preventDefault()}});
+  cv.addEventListener('pointerdown',function(e){var r=cv.getBoundingClientRect();move(e.clientX-r.left<r.width/2?-1:1)});
+  [].forEach.call(document.querySelectorAll('#orPad button'),function(b){b.addEventListener('click',function(){move(+b.dataset.d)})});
+
+  function next(){
+    if(S.i>=S.deck.length){S.deck=shuffle(Q.slice());S.i=0}
+    var q=S.deck[S.i++],dec=shuffle(OPTS.filter(function(o){return o!==q.a})).slice(0,2),opts=shuffle([q.a].concat(dec));
+    S.q=q;S.opts=opts;S.gy=-GH;S.state='play';
+  }
+  function start(){S={score:0,lives:3,streak:0,lane:1,px:LX[1],speed:62,deck:shuffle(Q.slice()),i:0,fb:null,fbT:0,parts:[],round:0};next();running=true;btn.textContent='In session…';last=performance.now();requestAnimationFrame(loop)}
+  function resolve(){
+    var pick=S.opts[S.lane],ok=pick===S.q.a;S.round++;
+    if(ok){S.streak++;var gain=100*Math.min(5,S.streak);S.score+=gain;S.speed+=7;S.fb={ok:true,head:'SUSTAINED  +'+gain,why:S.q.why};burst(S.px,H-90,'#33f0ff')}
+    else{S.lives--;S.streak=0;S.fb={ok:false,head:'OVERRULED · answer: '+S.q.a,why:S.q.why};burst(S.px,H-90,'#ff3d9a')}
+    S.state='fb';S.fbT=3.2;
+  }
+  function burst(x,y,c){for(var i=0;i<40;i++){var a=Math.random()*7,s=80+Math.random()*260;S.parts.push({x:x,y:y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:.8,c:c})}}
+  function update(dt){
+    S.px+=(LX[S.lane]-S.px)*Math.min(1,dt*14);
+    S.parts.forEach(function(q){q.x+=q.vx*dt;q.y+=q.vy*dt;q.vx*=.93;q.vy*=.93;q.l-=dt});S.parts=S.parts.filter(function(q){return q.l>0});
+    if(S.state==='play'){S.gy+=S.speed*dt;if(S.gy+GH/2>=H-96)resolve()}
+    else if(S.state==='fb'){S.fbT-=dt;if(S.fbT<=0){if(S.lives<=0){S.state='over';running=false;if(S.score>best){best=S.score;store('or_best',best)}btn.textContent='New trial';draw(performance.now());return}next()}}
+  }
+  function draw(ts){
+    var t=ts/1000;gridBG(ctx,W,H,t*(S&&S.state==='play'?S.speed/40:.6),'rgba(51,240,255,.07)');
+    // lanes
+    for(var i=1;i<3;i++){ctx.strokeStyle='rgba(155,107,255,.25)';ctx.setLineDash([10,14]);ctx.lineDashOffset=-t*60;ctx.beginPath();ctx.moveTo(i*W/3,150);ctx.lineTo(i*W/3,H);ctx.stroke()}ctx.setLineDash([]);
+    if(!S){title();return}
+    // testimony banner
+    ctx.fillStyle='rgba(16,20,46,.9)';ctx.fillRect(0,0,W,140);ctx.fillStyle='#ff3d9a';ctx.fillRect(0,138,W,2);
+    ctx.textAlign='left';ctx.textBaseline='top';ctx.font='500 13px "JetBrains Mono",monospace';ctx.fillStyle='#33f0ff';ctx.fillText(S.q.who.toUpperCase(),24,16);
+    ctx.font='500 22px "Chakra Petch",sans-serif';ctx.fillStyle='#e9edff';var ln=wrap(ctx,S.q.line,W-48);ln.slice(0,3).forEach(function(l,k){ctx.fillText(l,24,42+k*28)});
+    // gate
+    if(S.state==='play'||S.state==='fb'){
+      for(var g=0;g<3;g++){var x=g*W/3+14,w=W/3-28,y=S.gy;var reveal=S.state==='fb',ok=S.opts[g]===S.q.a;
+        var col=reveal?(ok?'#33f0ff':'rgba(255,61,154,.6)'):'#9b6bff';
+        ctx.fillStyle=reveal&&ok?'rgba(51,240,255,.16)':'rgba(155,107,255,.10)';ctx.fillRect(x,y,w,GH);
+        ctx.strokeStyle=col;ctx.lineWidth=2;ctx.shadowColor=col;ctx.shadowBlur=14;ctx.strokeRect(x,y,w,GH);ctx.shadowBlur=0;
+        ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='700 '+(S.opts[g].length>12?15:18)+'px "Unbounded",sans-serif';glowText(ctx,S.opts[g],x+w/2,y+GH/2,reveal&&!ok?'#8c93bd':'#e9edff',8)}
+    }
+    // player
+    var py=H-80;ctx.save();ctx.translate(S.px,py);ctx.fillStyle='#33f0ff';ctx.shadowColor='#33f0ff';ctx.shadowBlur=22;
+    ctx.beginPath();ctx.moveTo(0,-26);ctx.lineTo(22,18);ctx.lineTo(0,8);ctx.lineTo(-22,18);ctx.closePath();ctx.fill();ctx.restore();ctx.shadowBlur=0;
+    ctx.fillStyle='rgba(51,240,255,'+(.35+Math.sin(t*30)*.2)+')';ctx.beginPath();ctx.moveTo(S.px-8,py+14);ctx.lineTo(S.px,py+34+Math.random()*10);ctx.lineTo(S.px+8,py+14);ctx.fill();
+    S.parts.forEach(function(q){ctx.globalAlpha=Math.max(0,q.l);ctx.fillStyle=q.c;ctx.fillRect(q.x-2,q.y-2,4,4)});ctx.globalAlpha=1;
+    // HUD
+    ctx.textAlign='left';ctx.textBaseline='bottom';ctx.font='500 14px "JetBrains Mono",monospace';glowText(ctx,'SCORE '+S.score,20,H-16,'#e9edff',6);
+    ctx.fillStyle='#8c93bd';ctx.fillText('STREAK x'+Math.min(5,Math.max(1,S.streak))+'  ·  BEST '+best,20,H-38);
+    ctx.textAlign='right';for(var h=0;h<3;h++){ctx.fillStyle=h<S.lives?'#ff3d9a':'rgba(255,61,154,.18)';ctx.font='700 22px "Unbounded",sans-serif';ctx.fillText('§',W-20-h*26,H-14)}
+    // feedback
+    if(S.state==='fb'){var ok2=S.fb.ok;ctx.fillStyle='rgba(2,3,10,.82)';ctx.fillRect(60,200,W-120,170);ctx.strokeStyle=ok2?'#33f0ff':'#ff3d9a';ctx.lineWidth=2;ctx.strokeRect(60,200,W-120,170);
+      ctx.textAlign='center';ctx.textBaseline='top';ctx.font='700 26px "Unbounded",sans-serif';glowText(ctx,S.fb.head,W/2,222,ok2?'#33f0ff':'#ff3d9a',18);
+      ctx.font='400 18px "Chakra Petch",sans-serif';ctx.fillStyle='#e9edff';wrap(ctx,S.fb.why,W-200).slice(0,4).forEach(function(l,k){ctx.fillText(l,W/2,268+k*24)})}
+    if(S.state==='over'){ctx.fillStyle='rgba(2,3,10,.85)';ctx.fillRect(0,0,W,H);ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.font='700 54px "Unbounded",sans-serif';glowText(ctx,'COURT ADJOURNED',W/2,H/2-50,'#ff3d9a',26);
+      ctx.font='500 17px "JetBrains Mono",monospace';ctx.fillStyle='#e9edff';ctx.fillText('Score '+S.score+'  ·  rulings answered '+S.round+'  ·  best '+best,W/2,H/2+10);
+      ctx.fillStyle='#8c93bd';ctx.fillText('Press NEW TRIAL to go again.',W/2,H/2+44)}
+  }
+  function title(){
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='700 62px "Unbounded",sans-serif';
+    glowText(ctx,'OBJECTION',W/2,H/2-100,'#ff3d9a',30);glowText(ctx,'RUSH',W/2,H/2-30,'#33f0ff',30);
+    ctx.font='400 17px "Chakra Petch",sans-serif';ctx.fillStyle='#c8cdf0';
+    ctx.fillText('Testimony appears up top. Three rulings fall toward you.',W/2,H/2+40);
+    ctx.fillText('Steer into the correct one. Sometimes the right call is NO OBJECTION.',W/2,H/2+66);
+    ctx.font='500 13px "JetBrains Mono",monospace';ctx.fillStyle='#8c93bd';ctx.fillText('BEST SCORE '+best+'   ·   PRESS START TRIAL',W/2,H/2+120);
+  }
+  function loop(ts){var dt=Math.min(.05,(ts-last)/1000);last=ts;update(dt);draw(ts);if(running||(S&&S.state==='fb'))requestAnimationFrame(loop)}
+  btn.addEventListener('click',start);
+  function idle(ts){if(!S){draw(ts||0);requestAnimationFrame(idle)}}
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){if(!S)draw(0)});
+  idle(0);
+})();
+
+
+/* =========================================================
+   AI COURTROOM (sample + tts + dictation)
+   ========================================================= */
+(function(){
+  var CASE=[
+"CASE: State of Maryland v. Taylor Bennett, Circuit Court for Chesapeake County, C-11-CR-26-000631. 2026-27 MYLaw high school mock trial (Maryland Mock Trial Rules of Evidence apply).",
+"CHARGE: Conspiracy to commit robbery with a dangerous weapon (misdemeanor, max 20 years). State must prove beyond a reasonable doubt: (1) Bennett agreed with Morgan Pierce, (2) to commit robbery with a dangerous weapon, (3) both had specific intent, (4) Bennett knew it was illegal. Conspiracy can't rest only on co-conspirator statements; needs independent corroboration. No burden-shifting. Guilt phase only; sentencing irrelevant.",
+"RULINGS: Experts Wade (law enforcement) and Barry (psychology) admitted after voir dire. Pierce's conduct admissible. Pierce's statements conditionally admitted under 801(d)(2)(E); defense must object at the time and specifically renew before resting. State may NOT use Bennett's request for a lawyer as consciousness of guilt (403).",
+"STIPULATIONS: exhibits pre-numbered and authentic; no chain of custody issues; Exhibits 4, 6, 14, 18 are business records (803(6)); transcripts accurate; a baseball bat is a dangerous weapon; handwriting on Exhibit 8 (napkin) is Bennett's; Bennett only knows exhibits/facts discussed in their interrogation.",
+"STORY: Solara Interactive (CEO Jordan Shaffer) built TotalSense, a biometric wristband console; its only copy was the TotalSense_Master file on Terminal 04 in the basement development bay. Jennifer Bagley co-founded Solara, quit in 2018, founded PrimeFrame Studios (makers of the game CodeBlue) and claims Shaffer stole TotalSense from her notes. Taylor Bennett, Head Systems Administrator, is Bagley's child (hid it; admitted to Shaffer early 2025). Bennett has ~$300K student debt and told police 'Shaffer deserved to lose TotalSense.' Morgan Pierce, Tech Support Specialist under Bennett, has a sibling Cameron with cancer and no insurance, a 2019 theft conviction, and owns the in-game 'Lucky 8' bat.",
+"CODEBLUE: PrimeFrame game, teams of four with a secret spy; campaigns rotate every two weeks then vanish. The Hades Company campaign (released last week of May 2026): door 1 = ~30 enemies + portal (Lucky 8 makes it easy); door 2 = four puzzles in four minutes speedrun; door 3 = health drain stopped by typing the public code 'Orpheus'.",
+"TIMELINE: Mar 16-17 2026 Bennett mocked Cameron (per Pierce) / tense game. Mar 18 Shaffer sees Bennett with Bagley at Starbucks; Bennett denies leaking. Mar 20 Shaffer meets Pierce (Shaffer: Pierce offered 'maybe there's a way this can work out for both of us'; Caldwell overheard Shaffer: 'I know you're trying to pay those medical bills. I can make that happen. You just have to work with me' and 'home run'). Jun 1 Bennett proposes firmware update (~4 min scanner downtime); Shaffer approves. Jun 3 (Wed): override code set to 'Orpheus' (only Shaffer and Bennett supposed to know); Cooper tour, Bennett mutters 'Yeah, your hard work...'; Cooper overhears Bennett on phone 'Friday is definitely going to be... memorable. They are finally going to get what they deserve'; Caldwell sees 'code' and 'Orpheus' in a folder labeled 'M.P.' on Shaffer's desk; Bennett schedules update ~5pm; Mustang Tavern: Bennett writes napkin, hands to Pierce ('Pierce, I think we got this in the bag' / 'you got the Lucky 8, right? That'll stop anyone from getting in our way' + bat-swing gesture / 'Stick to the plan'), Bennett's keycard lanyard missing; Bennett tells Cooper it's 'CodeBlue strategy'. Jun 4: Caldwell sees Pierce with a keycard ('this is Bennett's, I'm just returning it'); night: Dawn, Pierce, Bennett beat Hades; Pierce: 'Bennett and I have been... practicing', 'big day for Solara with the tech demo'; Bennett says 'shut up' sharper than normal. Jun 5 (Fri) tech demo 8-9pm: 8:40 scanner down, 8:41 admin keycard scanned, 8:42 'Orpheus' entered (Shaffer alerted, sends Bennett down), 8:43 file copied to flash drive then deleted, 8:44 systems back, 8:45 someone runs out; Bennett found unconscious beside a metal 'Lucky 8' bat; napkin found crumpled under the scanner. Jun 6: Pierce confesses to Wade, names Bennett after a 20-minute plea pause with ASA Warrick; admin keycard and black flash drive in Pierce's bedroom; file recovered by disk drill. Shaffer visits Bennett in hospital as PrimeFrame announces look-alike OmniSense; Bennett: 'You can't steal your own idea... What goes around, comes around'; Shaffer fires Bennett. Jun 7 Caldwell fired over the folder (Shaffer cited security cameras). Jun 13 Bennett interview, admits napkin, says keycard lost day of robbery, asks for lawyer.",
+"EXHIBITS: 1 Bennett interrogation; 2 admin keycard photo; 3 flash drive; 4 Solara blueprint; 5 TotalSense ad; 6 Bennett hospital record (concussion, post-traumatic amnesia); 7 Pierce interrogations (Jun 6, Jul 2); 8 napkin ('Orpheus', 'four minutes', shamrock + '8'); 9 override screen; 10 Pierce plea (10 years fully suspended if cooperates); 11 Barry CV; 12 CodeBlue poster; 13 Hades Company poster; 14 Pierce-Bennett texts; 15 Shaffer-Bagley texts; 16 bat photo; 17 tech demo program; 18 Pierce 2019 theft record; 19 security log.",
+"WITNESS SELECTION: State calls Wade + Pierce + (Cooper or Shaffer). Defense calls Bennett + Barry + (Caldwell or Dawn)."
+  ].join('\n');
+
+  var W={
+    dawn:{name:'Kai Dawn',side:'Defense',dossier:"Kai Dawn, 23, top Clutch streamer @KaiInTheSky (~800K subscribers; paid mom's mortgage). CodeBlue is 'and always will be' his thing. Knew Pierce as @PierceTheHail, Bennett as @TBSecurity. Bennett's lawyers came to his mom's house; he plans to talk about the trial on stream and wants it 'juicy enough' to reach a million subscribers. Met Pierce March 2025 in the St. Patrick's campaign (Pierce had the Lucky 8, a big bat that randomly boosts stats). Played with Pierce over a year; met Pierce in real life at a streaming event. ~April 2025 Pierce cried in a game lobby about younger sibling Cameron's cancer, no insurance: 'I need to figure out a way to pay these bills off. One way or another.' Started playing with Bennett January 2026 (Pierce introduced them); Bennett less skilled, Head Systems Administrator at Solara; Dawn found it funny a Solara employee played a PrimeFrame game. March 17, 2026 (St. Patrick's campaign) Bennett asked Pierce 'I saw you got called into Shaffer's office today. What was that all about?'; Pierce: 'personal stuff'; they yelled all game; Pierce said Bennett had mocked Cameron the day before; next week friends again. Describes all three Hades doors; 'bring the Lucky 8' became an inside joke after Pierce forgot it and they lost in 30 seconds; Orpheus was discovered by players shortly after release; puzzle list is online; beat Hades 4-5 times in 200+ tries. June 4, 2026: Pierce and Bennett logged on late ('late night at the office'), played insanely well; Pierce: 'Bennett and I have been... practicing since we last played'; they beat Hades; Pierce: 'Nah, I got a long day tomorrow. Big day for Solara with the tech demo and all'; Bennett told Pierce to shut up, sharper than normal; Pierce: 'Shaffer told me that they... wanted me in anyway!' Hasn't spoken to either since. Would like to think Pierce wasn't involved but can't be sure; can't imagine Bennett doing it ('laidback and nice'). Exhibit 8: never seen the napkin, but handwriting matches notes Bennett wrote on a pad at Dawn's 750K-subscriber live event in March 2026; some terms look like Hades but can't say for sure. Exhibit 12: recognizes CodeBlue ad after two years playing. Exhibit 13: reacted to the Hades ad on stream. Was never at Solara."},
+    caldwell:{name:'Aspen Caldwell',side:'Defense',dossier:"Aspen Caldwell, 19, HR intern at Solara Sept 2025 to June 7 2026 (dad is a stockholder who got her the job). Cubicle next to HR Director Melissa Portman's office; thin walls. Amateur Instagram influencer; in March posted a story showing her ID badge and keycards; Bennett was livid, made her delete it, called a meeting with Shaffer hoping she'd be fired; she was annoyed at Bennett but says Bennett was committed to doing the right thing; Bennett then sent security reminders. Friend of Pierce; Pierce talked constantly about CodeBlue and the Lucky 8. March 18: heard Shaffer screaming to Portman about seeing Bennett with Jennifer Bagley at Starbucks; Portman said calm down, no discipline, document it. March 20: delivering a package, eavesdropped on Shaffer and Pierce through a closed conference door: Pierce 'done' with Bennett; Shaffer: 'I know your sibling Cameron is sick. I know you're trying to pay those medical bills. I can make that happen. You just have to work with me.' Pierce: 'What do I have to do?' Shaffer mentioned needing a 'home run'; heater muffled the rest. Pierce later cried in breakroom after a debt collector call: 'Don't worry. I have a plan to pay for those medical bills.' June 3: sent for a blue folder on Shaffer's desk, took one with sticky note 'M.P.' in Shaffer's handwriting; Portman said wrong folder; she peeked and saw 'code' and 'Orpheus'. Out of office June 4-7. Morning of June 4 saw Pierce with a keycard on their belt; Pierce stammered 'Oh, this is Bennett's, I'm just returning it to them.' Saw a flash drive like Exhibit 3 on Pierce's keychain. Fired June 7 by Shaffer citing security cameras catching her with the restricted folder; humiliated and angry. Weeks later Jennifer Bagley called and hired her as personal assistant at nearly double pay (Bagley somehow knew she'd been fired). Knows Bennett's handwriting from filing; napkin is Bennett's. Heard Pierce and Bennett talk about Hades the entire week before. Made the tech demo program (Exhibit 17) on Canva."},
+    bennett:{name:'Taylor Bennett',side:'Defense (the defendant)',dossier:"Taylor Bennett, born Oct 1 1997, Head Systems Administrator at Solara (hired 2021, promoted 2022), Bagley's child; father died when Bennett was six. ~$300,000 student debt; mom wouldn't help. Never told anyone about Bagley; they agreed to take down all pictures together. Told Bagley generally about TotalSense early 2025; she asked 'is it called TotalSense?' and said she helped create it with Shaffer. Told Shaffer the relationship wouldn't be a problem. March 2026 ran into mom at Starbucks by chance; Shaffer accused Bennett of being a mole; Bennett denies. Angry that Shaffer profits from Bagley's idea: 'Shaffer deserved to lose TotalSense.' Suggested the firmware update for security; pre-scheduled it June 3 ~5pm for 8:40pm June 5; downtime 'no longer than five minutes'. Set the override code 'Orpheus' because of the Hades code, 'I just had it on my mind'; never told anyone the code. Lost admin keycard the day of the robbery, doesn't know when; probably left it on the desk. Friends with Pierce; earlier bad blood, worked it out; played CodeBlue; went to Mustang Tavern once or twice to plan Hades runs. June 3 at Mustang Tavern Pierce talked about Cameron and needing to get out of debt. Pierce once said TotalSense would be worth a fortune. Wrote the napkin: everything was Hades strategy; shamrock 8 reminds Pierce to equip the Lucky 8. June 5: at 8:42 Shaffer ran up and sent Bennett to the bay alone; door open; Pierce at a computer with a black-and-blue flash drive; Pierce mentioned medical expenses, 'this is the only way'; Bennett reached for Pierce, got hit on the head, woke in hospital. Hospital: told Shaffer it was maybe karma, blames pain meds; Shaffer fired Bennett. Exhibit 6: concussion, confusion and memory issues for a few days, but says they remember everything. Never mentioned a bat to Pierce outside CodeBlue. Asked for a lawyer when told Pierce talked. Only familiar with exhibits 2, 6, 8, 14, 17 and facts discussed in the interrogation."},
+    barry:{name:'Dr. Billie Barry',side:'Defense expert',dossier:"Dr. Billie Barry, Psy.D., 43, Chief Clinical Psychologist at Chesapeake Behavioral Services; 9 years clinical; 7 years as CCPD on-site forensic psychologist; family long in CCPD (father currently a Sergeant who trained Wade). UMD BS, Penn Psy.D. Shadowed two dozen interrogations. Three peer-reviewed articles on interrogation-induced confessions. Retained in 40 criminal cases, all for the defense, 15 went to trial. Fee $6,000 retainer + $120/hr, 30 hours. Reviewed only Wade's report and Pierce's June 6 interrogation (read July 2 but didn't rely on it); never spoke to Pierce or Wade (Wade didn't return calls). Davenport Technique (1970s, 7 steps). Found 5 in Pierce's interrogation: positive confrontation ('We already know you were inside that development bay'), theme development (maximization '20 years', minimization 'those medical bills', 'you got pulled into something'), handling denials ('You didn't have admin credentials'), alternative question (two possibilities, someone with admin access planned it), oral recitation ('Well, that makes a lot more sense, doesn't it?', 'Bennett was the ringleader here, right?'). Plea offer during 20-minute pause, fully suspended sentence, offered only after Pierce refused to name Bennett: extremely coercive. 2024 Chesapeake University study: ~60% of 150 innocence cases involved coercive tactics, ~75% of those used Davenport. Brother-in-law falsely confessed, 5 years, exonerated by DNA. Opinion: Pierce's statements implicating Bennett are unreliable."},
+    wade:{name:'Sgt. Dallas Wade',side:'State expert / investigator',dossier:"Sgt. Dallas Wade, 33, CCPD 9 years; 4 years Marines (MARFORCYBER); 5 years Computer Crimes Unit; now Violent Crimes. Towson BS, UMGC MS digital forensics. Applied for Detective; admits working this case would help his odds. Testified 30+ times as law enforcement expert; first digital property theft case. Used PTO to testify, not subpoenaed. Supervised Shaffer's probation nine years ago (oxycodone PWID); gets holiday cards; Shaffer called him off-duty at 8:50pm June 5; arrived 9:15. Found napkin crumpled under the scanner ('Orpheus', 'four minutes', shamrock, '8'). Fingerprint scanner needs server; override = admin keycard + code. Log: keycard 8:41 (can't tell whose), Orpheus 8:42. Forensic copy: file copied to flash drive 8:43 and deleted. Found 'Lucky 8' bat. Shaffer said 'It must have been Pierce.' Didn't know about cameras; footage overwritten by the time he learned. June 6 Pierce confessed and named Bennett; search found admin keycard and black flash drive; disk drill recovered file. Shaffer said 'I caught Bagley red-handed.' Waited for Bennett to recover; June 13 report says he went to Bennett's address at 10:00 a.m. and reviewed phone and computer with consent (texts/emails with Pierce). Cooper's tip about Mustang Tavern came a week after. Addendum: Davenport methods are legal, common, not coercive; plea offers are lawful tools; Pierce's testimony is reliable to a reasonable degree of professional certainty."},
+    pierce:{name:'Morgan Pierce',side:'State (cooperating co-conspirator)',dossier:"Morgan Pierce, Solara Tech Support Specialist reporting to Bennett. Younger sibling Cameron has cancer, in chemo, no insurance; debt collectors calling. 2019 theft conviction. Owns the CodeBlue Lucky 8 ('PierceTheHail'). Pleaded guilty to robbery with a dangerous weapon; plea: 10 years fully suspended if Pierce complies and testifies. June 6 interrogation with Wade and Hunt: first said they 'figured out' how to do it; after a 20-minute pause for a plea offer, named Bennett as the planner; Wade asked leading questions like 'you used Bennett's keycard there?' and 'Bennett was the ringleader here, right?'. Second interview July 2 at the Corrections Facility. March 20 met Shaffer: said they didn't like Bennett and 'Maybe there's a way this can work out for the both of us' (Caldwell says Shaffer offered to help with bills). Had Bennett's keycard June 4 ('returning it'). Received napkin from Bennett at Mustang Tavern June 3. Hit Bennett with the bat. NOTE: Pierce's full interrogation transcripts were scanned images; stay within these facts and answer 'I don't recall' beyond them."},
+    shaffer:{name:'Jordan Shaffer',side:'State',dossier:"Jordan Shaffer, 35, CEO and co-founder of Solara (~50 employees). Penn grad; interned at Apple; mother's heart device inspired biometric tech. Co-founded Solara with Jennifer Bagley; she resigned in 2018 leaving notes that became TotalSense; she accuses Shaffer of stealing it; Shaffer denies but says 'even if I did? It serves her right.' Suspects PrimeFrame leaks. Hired Bennett April 2021 not knowing about Bagley; asked in early 2025; Bennett said relationship wasn't good and first loyalty was Solara. Oxycodone PWID conviction nine years ago after back injury; probation supervised by Wade, now mentor and friend. March 18 saw Bagley and Bennett at Starbucks; confronted Bennett, who denied; went to HR (Portman: document, don't escalate). March 20 asked Pierce about Bennett; Pierce red-faced, said Bennett mocked Cameron, then: 'You don't seem to like Bennett. I don't like Bennett. Maybe there's a way this can work out for the both of us.' Shaffer 'figured keeping Pierce in my back pocket wasn't the worst thing.' June 1 approved Bennett's firmware update (~4 minutes); only Shaffer and Bennett supposed to know override code. June 3 Cooper visit; Bennett muttered 'Yeah, your hard work...'. June 5: 8:40 alert scanner down, 8:42 alert code typed, asked Bennett to check, 8:45 saw someone run up the stairs and out, found Bennett on the ground by a bat, called 911, then Wade. Next day in hospital, OmniSense on TV; Bennett: 'You can't steal your own idea... I've known you were a fraud... What goes around, comes around.' Fired Bennett. Says flash drive contained the master file. Suing Bagley/PrimeFrame (lawyers say weak case). 'I never want to see Bennett again, unless it's in a prison jumpsuit.' Has 10-15 admin keycards out."},
+    cooper:{name:'Quinn Cooper',side:'State',dossier:"Quinn Cooper, 25, freelance tech journalist; UMD journalism, CS minor. Fired and convicted in 2023 of criminal misrepresentation for exaggerating the NovoSphere Z console in an article; community service. Hired by Bagley a year ago for an exposé on the Solara rivalry. Shaffer hired Cooper for a TotalSense preview. June 3 visit: Bennett friendly, toured the dev bay (fingerprint), said security matters; Shaffer stressed, shaking. TotalSense demo felt real. Shaffer: 'years of my hard work'; Bennett muttered 'Yeah, your hard work...'. Returning for phone, heard Bennett on phone: 'We're meeting at Mustang Tavern still, right?... Friday is definitely going to be... memorable. They are finally going to get what they deserve.' Went to Mustang Tavern on purpose (Wednesday trivia, crowded), ~15 feet away, partly hidden behind a wall: Bennett and Pierce hunched over a napkin; Bennett: 'Pierce, I think we got this in the bag.' Pierce: 'What happens if I miss timing?' Bennett: 'Well, you got the Lucky 8, right? That'll stop anyone from getting in our way' + bat-swing gesture; handed napkin: 'Stick to the plan and we will be fine.' Bartender spilled a drink on Cooper; Bennett asked what Cooper was doing there; Bennett: 'talking... CodeBlue strategy.' Bennett wore keycard lanyard all day but not at the tavern. Watches KaiInTheSky; knows Lucky 8 and Hades. Article published June 4. Called police tip line ~a week later for $500 ('easiest $500 of my life'); identified napkin at station; heard Wade say 'This promotion is a shoo-in now' (not 100% sure). PrimeFrame paid $3,000 for an OmniSense article. Never saw what was written on the napkin."}
+  };
+
+  var $=function(id){return document.getElementById(id)};
+  var log=$('courtLog'),inp=$('courtIn'),form=$('courtForm'),sendB=$('sendBtn'),startB=$('courtStart'),coachB=$('coachBtn'),resetB=$('resetBtn'),
+      micB=$('micBtn'),spkB=$('speakBtn'),live=$('courtLive'),roleT=$('courtRole'),note=$('courtNote');
+  var mode='crossme',hist=[],busy=false,ctrl=null,sample=null,tts=null,dict=null,speakOn=false,ready=false;
+
+  [].forEach.call(document.querySelectorAll('.mode'),function(b){b.addEventListener('click',function(){
+    mode=b.dataset.mode;[].forEach.call(document.querySelectorAll('.mode'),function(x){var on=x===b;x.classList.toggle('on',on);x.setAttribute('aria-checked',on)});
+    $('witField').style.display=mode==='judge'?'none':'';$('examField').style.display=mode==='witness'?'':'none';
+  })});
+  $('examField').style.display='none';
+
+  function add(cls,who,text){var d=document.createElement('div');d.className='msg '+cls;var b=document.createElement('b');b.textContent=who;var p=document.createElement('p');p.textContent=text;d.appendChild(b);d.appendChild(p);log.appendChild(d);log.scrollTop=log.scrollHeight;return p}
+  function aiName(){var w=W[$('witSel').value];return mode==='crossme'?'Opposing counsel':mode==='witness'?w.name:'The Court'}
+
+  function setup(){
+    var w=W[$('witSel').value],tough=$('toughSel').value,exam=$('examSel').value;
+    var level={regional:'Be firm but fair, moderate pace.',state:'Be sharp and efficient like a state-finals competitor.',brutal:'Be relentless: tight leading questions, pin down every inconsistency, impeach with exact affidavit wording.'}[tough];
+    var rules="Use ONLY facts from the case file and dossier below. Never invent material facts (Rule 9, invention of fact). Use exact dates. Keep it appropriate for high school students. Plain text, no markdown headers.";
+    if(mode==='crossme'){
+      var opp=/State/.test(w.side)?'defense counsel':'the prosecutor (State)';
+      return "You are "+opp+" in a Maryland high school mock trial, cross-examining the student, who is playing the witness "+w.name+" ("+w.side+"). "+level+" "+rules+
+      "\nFORMAT for every turn after the student answers: start with a line beginning 'Coach:' giving 1-2 sentences of honest feedback on their last answer (was it short and true? did it volunteer harmful info, speculate, get snarky, contradict the affidavit, answer a compound question with one yes? give a better sample answer in quotes). Then a blank line, then 'Q:' followed by your next single leading cross-examination question. Ask ONE question per turn. After 10 questions, instead give 'Scorecard:' with a 1-10 score and the 3 most important fixes."+
+      "\nFor this first turn, greet briefly in character as counsel ('Good afternoon, Mr./Ms. "+w.name.split(' ').pop()+"' is fine; use neutral 'witness' if unsure) and ask your first question as 'Q:'.\n\nWITNESS DOSSIER:\n"+w.dossier+"\n\nCASE FILE:\n"+CASE;
+    }
+    if(mode==='witness'){
+      return "You are role-playing the witness "+w.name+" ("+w.side+") on the stand in a Maryland high school mock trial. The student is the attorney conducting a "+(exam==='cross'?'CROSS-examination (they are opposing counsel)':'DIRECT examination (they are on your side)')+". "+level+
+      " Answer in first person, in character, the way this person talks. Keep answers to 1-3 sentences. Stay strictly within your affidavit facts below; if asked something not covered, say you don't know or don't remember. On cross, be truthful but don't volunteer help to the other side; admit facts in your affidavit if pinned down. Never step out of character EXCEPT: if the student's message starts with '/coach', step out and give a short coaching note on their questioning (leading on direct? compound? argumentative? good impeachment?). If the student asks an objectionable question, answer it anyway (their opponent would object). "+rules+
+      "\nFor this first turn, say 'I do.' as if just sworn in, then wait.\n\nYOUR AFFIDAVIT FACTS:\n"+w.dossier+"\n\nCASE FILE:\n"+CASE;
+    }
+    return "You are the presiding judge in a Maryland high school mock trial, State v. Taylor Bennett. The student will argue objections, ask procedural questions, or describe a moment in trial and ask how you'd rule. "+level+
+    " Rule like a real judge: state 'Sustained' or 'Overruled' (or answer the procedural question), cite the specific Maryland Mock Trial Rule of Evidence number or the Memorandum/Special Instruction, and explain in 2-4 sentences. If an argument is weak, say how a stronger attorney would phrase it. Reject arguments that rely on rules not in the casebook. "+rules+
+    "\nKEY RULES: 401-403 relevance/prejudice; 404 character; 602 personal knowledge; 607-609 impeachment and convictions (felony within 10 yrs, or any dishonesty crime); 611 mode of questioning (no leading on direct, cross not limited to scope of direct, redirect limited to cross); 612 refresh memory; 701 lay opinion; 702-705 experts (704(b) no opinion on defendant's mental state); 801 hearsay definition, 801(d)(1) prior statements, 801(d)(2) opposing party and co-conspirator; 803(1)(2)(3)(4)(5)(6) exceptions; 805 double hearsay; 901 authentication incl. lay handwriting and voice ID. No objection for invention of fact; impeach instead. Time: 42 min per side, 5 min opening, 8 min closing."+
+    "\nFor this first turn, open court in one or two sentences and invite the first objection or question.\n\nCASE FILE:\n"+CASE;
+  }
+
+  function lock(b){busy=b;sendB.disabled=b||!ready;inp.disabled=!ready;coachB.disabled=b||!ready;resetB.disabled=!ready}
+  function call(userText,show){
+    if(!sample)return;
+    hist.push({role:'user',content:userText});
+    if(show)add('me','You',show);
+    var p=add('ai',aiName(),'');p.classList.add('typing');lock(true);
+    ctrl=new AbortController();
+    sample(hist,{cache:false,signal:ctrl.signal,modelTier:'default',onText:function(o){p.textContent=o.text;log.scrollTop=log.scrollHeight}})
+    .then(function(r){p.classList.remove('typing');p.textContent=r.text;hist.push({role:'assistant',content:r.text});lock(false);inp.focus();if(speakOn)say(r.text)})
+    .catch(function(e){p.classList.remove('typing');hist.pop();var m=e&&e.code==='rate_limited'?'Claude needs a short break. Wait a minute, then send again.':e&&e.code==='not_granted'?'Claude access was turned off for this page. Allow it to keep practicing.':(e&&e.name==='AbortError'?'Stopped.':'That message didn\'t go through. Send it again.');
+      if(e&&e.text){p.textContent=e.text}else{p.parentNode.remove()}add('sys err','Clerk',m);lock(false)});
+  }
+  function say(text){if(!tts)return;var clean=text.replace(/^Coach:.*$/m,'').trim();tts.speak(clean.slice(0,2000),{voice:mode==='judge'?'rounded':mode==='witness'?'airy':'glassy'}).catch(function(){})}
+
+  startB.addEventListener('click',function(){
+    if(!sample){note.textContent='The AI courtroom needs Claude. Open this page on claude.ai to use it.';return}
+    if(ctrl)ctrl.abort();hist=[];log.innerHTML='';ready=true;
+    var w=W[$('witSel').value];
+    roleT.textContent=mode==='crossme'?'Cross-exam · you are '+w.name:mode==='witness'?'You are examining '+w.name:'Motions & objections';live.classList.add('on');
+    inp.placeholder=mode==='crossme'?'Answer as the witness…':mode==='witness'?'Ask your question, counsel… (start with /coach for feedback)':'Make your objection or argument…';
+    add('sys','Clerk',mode==='crossme'?'All rise. You\'re on the stand. Keep answers short and true. A coaching note comes with every new question.':mode==='witness'?'The witness has been sworn. Begin your '+$('examSel').value+'. Type /coach anytime for feedback.':'Court is in session. Describe the testimony and your objection, or ask a procedural question.');
+    call(setup(),null);
+  });
+  form.addEventListener('submit',function(e){e.preventDefault();var t=inp.value.trim();if(!t||busy)return;inp.value='';call(t,t)});
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();form.requestSubmit?form.requestSubmit():form.dispatchEvent(new Event('submit'))}});
+  coachB.addEventListener('click',function(){if(busy)return;call('/coach Step out of role for a moment. Give me an honest coaching summary of my performance so far: 2 strengths, 3 fixes, and one model line I should use. Then tell me we can continue.','Coach me')});
+  resetB.addEventListener('click',function(){if(ctrl)ctrl.abort();hist=[];ready=false;log.innerHTML='';add('sys','Clerk','Session cleared. Pick a mode and press Start session.');live.classList.remove('on');roleT.textContent='Court not in session';lock(false);inp.placeholder='Start a session first…'});
+  spkB.addEventListener('click',function(){speakOn=!speakOn;spkB.setAttribute('aria-pressed',speakOn);spkB.textContent=speakOn?'🔊 Reading aloud':'🔈 Read aloud';if(!speakOn&&tts)tts.stop()});
+
+  var recording=false;
+  micB.addEventListener('click',function(){
+    if(!dict)return;
+    if(recording){dict.stop().catch(function(){});return}
+    dict.start().catch(function(e){if(e&&e.code==='not_granted')micB.hidden=true});
+  });
+
+  /* --- backends: claude.ai capabilities, else Netlify function + browser voice --- */
+  function netlifySample(messages,opts){
+    return fetch('/api/court',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:messages}),signal:opts&&opts.signal})
+      .then(function(r){return r.json().then(function(j){if(!r.ok)throw {code:r.status===429?'rate_limited':'server',message:j.error||('HTTP '+r.status)};return j})})
+      .then(function(j){if(opts&&opts.onText)opts.onText({text:j.text,delta:j.text});return {text:j.text,truncated:false}});
+  }
+  function browserTTS(){
+    if(!('speechSynthesis' in window))return null;
+    return {speak:function(t,o){return new Promise(function(res){speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.rate=1.02;u.pitch=o&&o.voice==='rounded'?.85:o&&o.voice==='airy'?1.15:1;u.onend=res;u.onerror=res;speechSynthesis.speak(u)})},stop:function(){speechSynthesis.cancel()}};
+  }
+  function browserDictation(){
+    var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return null;
+    var rec=null,cb={state:function(){},partial:function(){},fin:function(){}};
+    return {onState:function(f){cb.state=f},onPartial:function(f){cb.partial=f},onFinal:function(f){cb.fin=f},
+      start:function(){rec=new SR();rec.lang='en-US';rec.interimResults=true;rec.continuous=true;
+        rec.onstart=function(){cb.state({state:'listening'})};rec.onend=function(){cb.state({state:'idle',reason:'stopped'})};
+        rec.onresult=function(e){var interim='';for(var i=e.resultIndex;i<e.results.length;i++){var r=e.results[i];if(r.isFinal)cb.fin({text:r[0].transcript.trim()});else interim+=r[0].transcript}cb.partial({text:interim})};
+        rec.onerror=function(){cb.state({state:'idle',reason:'error'})};rec.start();return Promise.resolve()},
+      stop:function(){if(rec)rec.stop();return Promise.resolve()}};
+  }
+  function hookDict(d){if(!d)return;dict=d;micB.hidden=false;
+    var base='';d.onState(function(s){recording=s.state==='listening';micB.classList.toggle('rec',recording);if(recording)base=inp.value?inp.value+' ':''});
+    d.onPartial(function(o){inp.value=base+o.text});d.onFinal(function(o){base=base+o.text+' ';inp.value=base});}
+  function useNetlify(){
+    sample=netlifySample;note.textContent='Live AI connected through this site\'s server.';
+    tts=browserTTS();if(tts)spkB.hidden=false;hookDict(browserDictation());
+  }
+  function wire(){
+    claude.use('sample').then(function(s){if(s){sample=s}else useNetlify()});
+    claude.use('tts').then(function(t){if(t){tts=t;spkB.hidden=false}});
+    claude.use('dictation').then(function(d){if(d)hookDict(d)});
+  }
+  var onClaude=/(^|\.)claude\.ai$|claudeusercontent|claude\.site/.test(location.hostname)||window.parent!==window;
+  var tries=0;(function poll(){if(window.claude&&window.claude.use){wire();return}if(!onClaude||++tries>12){useNetlify();return}setTimeout(poll,250)})();
+})();
+
+</script>
+</body>
+</html>
